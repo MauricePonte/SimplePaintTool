@@ -47,13 +47,14 @@ public class PaintingFrame extends JFrame {
         mainPanel.add(buttonsPanel, BorderLayout.NORTH);
         buttonsGroup = new ButtonGroup();
 
-        // Comment here
-        tglBtnDrawRectangle = new JToggleButton();
-        //tglBtnDrawRectangle.setFont(new Font("Dotum", Font.BOLD, 12));
-        tglBtnDrawRectangle.setText("Rectangle");
+        // Hier instancieren we Toggle buttons
+        tglBtnDrawRectangle = new JToggleButton("Rectangle");
         buttonsGroup.add(tglBtnDrawRectangle);
-        //tglBtnDrawRectangle.setCursor(toolkit.createCustomCursor(image1 , new java.awt.Point(tglBtnDrawSquare.getX(), tglBtnDrawSquare.getY()), "img"));
         buttonsPanel.add(tglBtnDrawRectangle);
+
+        tglBtnDrawElipse = new JToggleButton("Elipse");
+        buttonsGroup.add(tglBtnDrawElipse);
+        buttonsPanel.add(tglBtnDrawElipse);
 
         view.addMouseListener(new MouseAdapter() {
             final Point[] pointers = new Point[2];
@@ -66,23 +67,8 @@ public class PaintingFrame extends JFrame {
             public void mouseReleased(MouseEvent e) {
                 pointers[1] = new Point(e.getX(), e.getY());
                 if (tglBtnDrawRectangle.isSelected()) controller.btnAddRectangleClicked(pointers);
+                else if(tglBtnDrawElipse.isSelected()) controller.btnAddEllipseClicked(pointers);
             }
-            /*
-            @Override
-            public void mouseClicked(MouseEvent click) {
-                if (tglBtnDrawRectangle.isSelected()){
-
-                    controller.btnAddRectangleClicked(getCoordinaten());
-                }
-                /*if (tglBtnDrawPoint.isSelected()) controller.btnAddPointClicked(click);
-                else if (tglBtnDrawLine.isSelected()) controller.btnAddLineClicked(click);
-                else if (tglBtnDrawSquare.isSelected()) controller.btnAddSquareClicked(click);
-                else if (tglBtnDrawRectangle.isSelected()) controller.btnAddRectangleClicked(click);
-                else if (tglBtnDrawCircle.isSelected()) controller.btnAddCircleClicked(click);
-                else if (tglBtnDrawHexagon.isSelected()) controller.btnAddHexagonClicked(click);
-                else if (tglBtnSelect.isSelected()) controller.btnSelectShapeClicked(click);
-            }
-            */
         });
     }
 
