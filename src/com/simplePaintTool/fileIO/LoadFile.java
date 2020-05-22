@@ -17,10 +17,14 @@ import java.util.Stack;
 public class LoadFile {
     private String fileName;
     private PaintModel model;
+    drawStrat rectangleStrat;
+    drawStrat ellipseStrat;
 
-    public LoadFile(String fileName,PaintModel model){
+    public LoadFile(String fileName,PaintModel model,drawStrat rect,drawStrat ellips){
         this.fileName = fileName + ".txt";
         this.model = model;
+        this.rectangleStrat = rect;
+        this.ellipseStrat = ellips;
     }
 
     public Stack<Command> load() throws FileNotFoundException {
@@ -53,7 +57,7 @@ public class LoadFile {
         Point start = new Point(x,y);
         Point end = new Point(x+width,y+height);
         drawStrat strategy;
-        if(soortShape.equals("ellipse")) strategy = new EllipseStrat(); else strategy = new RectangleStrat();
+        if(soortShape.equals("ellipse")) strategy = ellipseStrat; else strategy = rectangleStrat;
         Shape s = new Shape(start,end,strategy);
         Command c = new AddShapeCommand(s,model);
         return c;

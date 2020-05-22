@@ -1,9 +1,4 @@
-rectangle 521 98 248 121
-rectangle 620 364 161 117
-rectangle 980 193 178 134
-rectangle 916 373 151 158
-rectangle 1222 361 233 158
-rectangle 1356 120 278 144
-rectangle 269 327 211 148
-rectangle 443 607 193 119
-rectangle 724 618 225 143
+rectangle 171 114 290 220
+rectangle 584 318 299 244
+ellipse 937 92 278 181
+ellipse 1045 398 238 204

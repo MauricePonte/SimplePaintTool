@@ -1,14 +1,14 @@
 package com.simplePaintTool;
 
 import com.simplePaintTool.mvc.PaintController;
+import com.simplePaintTool.mvc.PaintObserver;
 import com.simplePaintTool.mvc.PaintView;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
+import java.io.FileNotFoundException;
 
 public class PaintingFrame extends JFrame {
     private JPanel mainPanel;
@@ -22,6 +22,12 @@ public class PaintingFrame extends JFrame {
 
     private JButton btnUndo;
     private JButton btnRedo;
+    private JButton btnSave;
+    private JButton btnLoad;
+
+    // Mouse adapters voor buttons
+    private MouseAdapter mouseAdapterUndo;
+    private MouseAdapter mouseAdapterRedo;
 
     public PaintingFrame(){
         // Comment here
@@ -47,14 +53,70 @@ public class PaintingFrame extends JFrame {
         mainPanel.add(buttonsPanel, BorderLayout.NORTH);
         buttonsGroup = new ButtonGroup();
 
-        // Comment here
-        tglBtnDrawRectangle = new JToggleButton();
-        //tglBtnDrawRectangle.setFont(new Font("Dotum", Font.BOLD, 12));
-        tglBtnDrawRectangle.setText("Rectangle");
+        // Hier instancieren we Toggle buttons
+        // Rectanlge button
+        tglBtnDrawRectangle = new JToggleButton("Rectangle");
         buttonsGroup.add(tglBtnDrawRectangle);
-        //tglBtnDrawRectangle.setCursor(toolkit.createCustomCursor(image1 , new java.awt.Point(tglBtnDrawSquare.getX(), tglBtnDrawSquare.getY()), "img"));
         buttonsPanel.add(tglBtnDrawRectangle);
 
+        // Ellipse button
+        tglBtnDrawElipse = new JToggleButton("Elipse");
+        buttonsGroup.add(tglBtnDrawElipse);
+        buttonsPanel.add(tglBtnDrawElipse);
+
+        // Hier instancieren we overige buttons
+        // Undo button
+        btnUndo = new JButton("Undo");
+        btnUndo.setEnabled(false);
+        buttonsPanel.add(btnUndo);
+        // Redo button
+        btnRedo = new JButton("Redo");
+        btnRedo.setEnabled(false);
+        buttonsPanel.add(btnRedo);
+        //save button
+        btnSave = new JButton("Save");
+        btnSave.setEnabled(true);
+        buttonsPanel.add(btnSave);
+        //load button
+        btnLoad = new JButton("Load");
+        btnLoad.setEnabled(true);
+        buttonsPanel.add(btnLoad);
+
+        //Action listener van de load button
+        btnLoad.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    controller.loadSaveFile();
+                } catch (FileNotFoundException ex) {
+                }
+            }
+        });
+
+        btnSave.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    controller.SaveFileClicked();
+                } catch (FileNotFoundException ex) {
+                }
+            }
+        });
+
+        mouseAdapterRedo = new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                controller.redoCommand();
+            }
+        };
+        mouseAdapterUndo = new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                controller.undoCommand();
+            }
+        };
+
+        // Mouse listener gedeelte. Hier handelen we muis inputs af, opbasis van welke knop geselecteerd is
         view.addMouseListener(new MouseAdapter() {
             final Point[] pointers = new Point[2];
             @Override
@@ -65,54 +127,36 @@ public class PaintingFrame extends JFrame {
             @Override
             public void mouseReleased(MouseEvent e) {
                 pointers[1] = new Point(e.getX(), e.getY());
+
                 if (tglBtnDrawRectangle.isSelected()) controller.btnAddRectangleClicked(pointers);
-            }
-            /*
-            @Override
-            public void mouseClicked(MouseEvent click) {
-                if (tglBtnDrawRectangle.isSelected()){
-
-                    controller.btnAddRectangleClicked(getCoordinaten());
-                }
-                /*if (tglBtnDrawPoint.isSelected()) controller.btnAddPointClicked(click);
-                else if (tglBtnDrawLine.isSelected()) controller.btnAddLineClicked(click);
-                else if (tglBtnDrawSquare.isSelected()) controller.btnAddSquareClicked(click);
-                else if (tglBtnDrawRectangle.isSelected()) controller.btnAddRectangleClicked(click);
-                else if (tglBtnDrawCircle.isSelected()) controller.btnAddCircleClicked(click);
-                else if (tglBtnDrawHexagon.isSelected()) controller.btnAddHexagonClicked(click);
-                else if (tglBtnSelect.isSelected()) controller.btnSelectShapeClicked(click);
-            }
-            */
-        });
-    }
-
-    private Point[] getCoordinaten(){
-        final Point[] pointers = new Point[2];
-
-        view.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                pointers[0] = new Point(e.getX(), e.getY());
-
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                pointers[1] = new Point(e.getX(), e.getY());
-
+                else if(tglBtnDrawElipse.isSelected()) controller.btnAddEllipseClicked(pointers);
             }
         });
 
-        return pointers;
     }
-
 
     public PaintView getView() {
         return view;
     }
+
     public void setController(PaintController controller){
-        this.controller = controller; 
+        this.controller = controller;
+        controller.addPropertyChangedListener(new PaintObserver(this));
     }
 
+    // Getters voor Observer
+    public JButton getBtnUndo() {
+        return btnUndo;
+    }
+    public JButton getBtnRedo() {
+        return btnRedo;
+    }
+
+    public MouseAdapter getMouseAdapterUndo() {
+        return mouseAdapterUndo;
+    }
+    public MouseAdapter getMouseAdapterRedo() {
+        return mouseAdapterRedo;
+    }
 
 }
