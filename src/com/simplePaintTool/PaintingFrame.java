@@ -1,9 +1,5 @@
 package com.simplePaintTool;
 
-import com.simplePaintTool.commands.Command;
-import com.simplePaintTool.commands.resizeShapeCommand;
-import com.simplePaintTool.fileIO.LoadFile;
-import com.simplePaintTool.fileIO.SaveFile;
 import com.simplePaintTool.mvc.PaintController;
 import com.simplePaintTool.mvc.PaintView;
 
@@ -13,7 +9,6 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.FileNotFoundException;
 
 public class PaintingFrame extends JFrame {
     private JPanel mainPanel;
@@ -27,8 +22,6 @@ public class PaintingFrame extends JFrame {
 
     private JButton btnUndo;
     private JButton btnRedo;
-    private JButton btnSave;
-    private JButton btnLoad;
 
     public PaintingFrame(){
         // Comment here
@@ -62,16 +55,6 @@ public class PaintingFrame extends JFrame {
         //tglBtnDrawRectangle.setCursor(toolkit.createCustomCursor(image1 , new java.awt.Point(tglBtnDrawSquare.getX(), tglBtnDrawSquare.getY()), "img"));
         buttonsPanel.add(tglBtnDrawRectangle);
 
-        btnSave = new JButton();
-        btnSave.setText("SaveFile");
-        buttonsGroup.add(btnSave);
-        buttonsPanel.add(btnSave);
-
-        btnLoad = new JButton();
-        btnLoad.setText("LoadFile");
-        buttonsGroup.add(btnLoad);
-        buttonsPanel.add(btnLoad);
-
         view.addMouseListener(new MouseAdapter() {
             final Point[] pointers = new Point[2];
             @Override
@@ -82,10 +65,7 @@ public class PaintingFrame extends JFrame {
             @Override
             public void mouseReleased(MouseEvent e) {
                 pointers[1] = new Point(e.getX(), e.getY());
-                if (tglBtnDrawRectangle.isSelected()){
-                    controller.btnAddRectangleClicked(pointers);
-                }
-
+                if (tglBtnDrawRectangle.isSelected()) controller.btnAddRectangleClicked(pointers);
             }
             /*
             @Override

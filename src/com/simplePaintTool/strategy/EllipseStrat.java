@@ -12,7 +12,8 @@ public class EllipseStrat implements drawStrat{
     }
 
     @Override
-    public String toString(){
-        return "ellipse";
+    public String toString(Shape s){
+
+        return "Mand";
     }
 }
