@@ -5,6 +5,12 @@ import com.simplePaintTool.shapes.Shape;
 import java.awt.*;
 
 public class EllipseStrat implements drawStrat{
+    // Instance of singleton pattern
+    private static drawStrat instance = new EllipseStrat();
+    // Method to get instance (Singleton pattern)
+    public static drawStrat getInstance() {
+        return instance;
+    }
 
     @Override
     public void draw(Graphics g, Shape s) {
@@ -14,7 +20,6 @@ public class EllipseStrat implements drawStrat{
 
     @Override
     public String toString(Shape s){
-
-        return "Mand";
+        return "Elipse";
     }
 }
