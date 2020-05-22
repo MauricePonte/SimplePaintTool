@@ -6,10 +6,9 @@ import com.simplePaintTool.strategy.drawStrat;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class Shape {
+public class Shape implements DrawingObject{
     private Color color = Color.BLACK;
 
-    private ArrayList<Shape> children;
     private boolean selected;
     private drawStrat drawStrategy;
 
@@ -17,7 +16,6 @@ public class Shape {
 
     public Shape(Point startPoint, Point endPoint,drawStrat drawStrategy) {
         this.drawStrategy = drawStrategy;
-        this.children = new ArrayList<>();
         setAfmetingen(startPoint,endPoint);
     }
 
@@ -28,15 +26,24 @@ public class Shape {
         this.height = Math.abs(start.y - end.y);
     }
 
+    @Override
     public void draw(Graphics graphics){
         drawStrategy.draw(graphics,this);
-        for (Shape s:children) {
-            s.draw(graphics);
-        }
     }
 
-    public void selected(Graphics graphics){
+    @Override
+    public void select(){
+        this.selected = true;
+    }
 
+    @Override
+    public void deselect(){
+        this.selected = false;
+    }
+
+
+    public boolean getSelected(){
+        return selected;
     }
 
     public boolean containsClick(int xCoordinate, int yCoordinate){
@@ -51,8 +58,7 @@ public class Shape {
         this.color = color;
     }
 
-    public boolean getSelected(){ return selected; }
-    public void setSelected(boolean s){ this.selected = s; }
+
 
     public int getX() {
         return x;
@@ -84,5 +90,11 @@ public class Shape {
 
     public void setHeight(int height) {
         this.height = height;
+    }
+
+    @Override
+    public String toString(int identation){
+        String toWrite = drawStrategy.toString() + " " + this.x + " " + this.y + " " + this.width + " " + this.height;
+        return toWrite;
     }
 }

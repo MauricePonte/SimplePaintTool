@@ -11,9 +11,8 @@ public class RectangleStrat implements drawStrat{
     }
 
     @Override
-    public String toString(Shape s){
-
-        return "4Head";
+    public String toString(){
+        return "rectangle";
     }
 
 }

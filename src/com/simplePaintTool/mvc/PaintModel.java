@@ -34,4 +34,8 @@ public class PaintModel {
     public ArrayList<Shape> getAllShapes(){
         return shapes;
     }
+
+    public void clearCanvas(){
+        this.shapes.clear();
+    }
 }

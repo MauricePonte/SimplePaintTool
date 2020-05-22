@@ -7,7 +7,7 @@ public class moveShapeCommand implements Command{
     private int newX, newY;
     private int oldX, oldY;
 
-    moveShapeCommand(int newX, int newY, Shape s){
+    public moveShapeCommand(int newX, int newY, Shape s){
         this.shape = s;
         this.newX = newX;
         this.newY = newY;

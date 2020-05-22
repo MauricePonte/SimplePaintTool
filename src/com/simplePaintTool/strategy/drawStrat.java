@@ -6,5 +6,5 @@ import java.awt.*;
 
 public interface drawStrat {
     void draw(Graphics g, Shape s);
-    String toString(Shape s);
+    String toString();
 }

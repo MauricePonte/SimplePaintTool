@@ -8,7 +8,7 @@ public class resizeShapeCommand implements Command{
     private Shape shape;
     private int newHeight, newWidth;
 
-    resizeShapeCommand(int newHeight,int newWidth,Shape s){
+    public resizeShapeCommand(int newHeight,int newWidth,Shape s){
         this.shape = s;
         this.newHeight = newHeight;
         this.newWidth = newWidth;
