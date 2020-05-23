@@ -1,26 +1,32 @@
 package com.simplePaintTool.mvc;
 
 import com.simplePaintTool.PaintingFrame;
-import com.simplePaintTool.commands.AddShapeCommand;
-import com.simplePaintTool.commands.Command;
+import com.simplePaintTool.commands.*;
 import com.simplePaintTool.fileIO.LoadFile;
 import com.simplePaintTool.fileIO.SaveFile;
+import com.simplePaintTool.shapes.DrawingObject;
+import com.simplePaintTool.shapes.Group;
 import com.simplePaintTool.shapes.Shape;
 import com.simplePaintTool.strategy.EllipseStrat;
 import com.simplePaintTool.strategy.RectangleStrat;
 import com.simplePaintTool.strategy.drawStrat;
 
+import javax.swing.*;
 import java.awt.*;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Stack;
+import java.util.List;
 
 public class PaintController {
     private PropertyChangeSupport propertyChangeSupport;
     private PaintModel model;
     private PaintingFrame frame;
+    private DrawingObject selectedObject;
+    private int groupCount;
 
     drawStrat rectangleStrat;
     drawStrat ellipseStrat;
@@ -39,6 +45,8 @@ public class PaintController {
 
         commands = new Stack<>();
         undoCommands = new Stack<>();
+        groupCount = 0;
+        this.setList(model.getList());
     }
 
     private void executeCommand(Command c){
@@ -47,6 +55,7 @@ public class PaintController {
         if(!commands.isEmpty()){
             propertyChangeSupport.firePropertyChange("undoBtn on", false,true);
         }
+        this.setList(model.getList());
         frame.getView().repaint();
     }
 
@@ -64,6 +73,7 @@ public class PaintController {
             propertyChangeSupport.firePropertyChange("redoBtn on", false, true);
         }
         // Repaint de shapes
+        this.setList(model.getList());
         frame.getView().repaint();
     }
 
@@ -78,17 +88,46 @@ public class PaintController {
             propertyChangeSupport.firePropertyChange("commandStack is empty",false,true );
         }
         // Repaint de shapes
+        this.setList(model.getList());
         frame.getView().repaint();
     }
 
     public void btnAddRectangleClicked(Point[] p) {
-        Shape s = new Shape(p[0],p[1],rectangleStrat);
-        executeCommand(new AddShapeCommand(s,model));
+        if(selectedObject instanceof Group){
+            Shape s = new Shape(p[0],p[1],rectangleStrat,(Group) selectedObject);
+            executeCommand(new AddShapeCommand(s,model,0));
+        }else{
+            System.out.println("Ik heb geen ouder");
+        }
     }
 
     public void btnAddEllipseClicked(Point[] p) {
-        Shape s = new Shape(p[0],p[1],ellipseStrat);
-        executeCommand(new AddShapeCommand(s,model));
+        if(selectedObject instanceof Group){
+            Shape s = new Shape(p[0],p[1],ellipseStrat,(Group) selectedObject);
+            executeCommand(new AddShapeCommand(s,model,0));
+        }else{
+            System.out.println("Ik heb geen ouder");
+        }
+    }
+
+    public void btnResizeClicked(Point[] p){
+        List<DrawingObject> objectsToResize = selectedObject.getShape();
+        executeCommand(new resizeShapeCommand(p,objectsToResize));
+    }
+
+    public void btnMoveClicked(Point[] p){
+        List<DrawingObject> objectsToMove = selectedObject.getShape();
+        executeCommand(new moveShapeCommand(p,objectsToMove));
+    }
+
+    public void btnAddGroupClicked(){
+        if(selectedObject instanceof Group){
+            groupCount++;
+            Group s = new Group(groupCount,(Group) selectedObject);
+            executeCommand(new AddGroupCommand(s,model,((Group) selectedObject).getGroupID()));
+        }else{
+            System.out.println("Ik heb geen ouder");
+        }
     }
 
     public void SaveFileClicked() throws FileNotFoundException {
@@ -101,12 +140,24 @@ public class PaintController {
         LoadFile loadfile = new LoadFile("TestFile",this.model,this.rectangleStrat,this.ellipseStrat);
         Stack<Command> loadedCommands = loadfile.load();
         while(loadedCommands.size() > 0){
-            executeCommand(loadedCommands.lastElement());
-            loadedCommands.remove(loadedCommands.lastElement());
+            executeCommand(loadedCommands.firstElement());
+            loadedCommands.remove(loadedCommands.firstElement());
         }
     }
 
+    //functies voor de JList om objecten te adden removen en deselecteren.
+    public void setList(DefaultListModel<DrawingObject> lijstje){
+        frame.setList(lijstje);
+    }
 
+    public void deselectAll(){
+        this.model.deselectAllObjects();
+    }
+
+    public void setSelectedObject(DrawingObject d){
+        this.selectedObject = d;
+    }
+    //functies voor de JList om objecten te adden removen en deselecteren.
 
 
 

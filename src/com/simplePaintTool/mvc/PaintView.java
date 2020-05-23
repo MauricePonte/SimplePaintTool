@@ -1,5 +1,6 @@
 package com.simplePaintTool.mvc;
 
+import com.simplePaintTool.shapes.DrawingObject;
 import com.simplePaintTool.shapes.Shape;
 
 import javax.swing.*;
@@ -30,8 +31,11 @@ public class PaintView extends JPanel {
     public void paint(Graphics g) {
         super.paint(g);
         if(model != null){
-            ArrayList<Shape> shapes = model.getAllShapes();
-            for(Shape s : shapes){s.draw(g);}
+            /*
+            ArrayList<DrawingObject> shapes = model.getAllShapes();
+            for(DrawingObject s : shapes){s.draw(g);}
+             */
+            model.GetMainGroup().draw(g);
         }
     }
 }

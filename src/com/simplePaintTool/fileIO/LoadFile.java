@@ -1,8 +1,10 @@
 package com.simplePaintTool.fileIO;
 
+import com.simplePaintTool.commands.AddGroupCommand;
 import com.simplePaintTool.commands.AddShapeCommand;
 import com.simplePaintTool.commands.Command;
 import com.simplePaintTool.mvc.PaintModel;
+import com.simplePaintTool.shapes.Group;
 import com.simplePaintTool.shapes.Shape;
 import com.simplePaintTool.strategy.EllipseStrat;
 import com.simplePaintTool.strategy.RectangleStrat;
@@ -13,12 +15,14 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Queue;
 import java.util.Stack;
+import java.util.List;
 
 public class LoadFile {
     private String fileName;
     private PaintModel model;
     drawStrat rectangleStrat;
     drawStrat ellipseStrat;
+    List<Group> groups = new ArrayList<>();
 
     public LoadFile(String fileName,PaintModel model,drawStrat rect,drawStrat ellips){
         this.fileName = fileName + ".txt";
@@ -33,33 +37,62 @@ public class LoadFile {
         String readerLine = null;
         String[] readerTokens;
         int count = 0;
+        int indentationcount;
+        int groupCounter = -1;
+
         Stack<Command> loadCommands = new Stack<>();
         try{
             for (readerLine = fileReader.readLine(); readerLine != null; readerLine = fileReader.readLine(),count++){
                 readerTokens = readerLine.split(" ");
-                if (readerTokens[0].equals("rectangle") || readerTokens[0].equals("ellipse")){
-                    String soortShape = readerTokens[0];
-                    int x = Integer.parseInt(readerTokens[1]);
-                    int y = Integer.parseInt(readerTokens[2]);
-                    int width = Integer.parseInt(readerTokens[3]);
-                    int height = Integer.parseInt(readerTokens[4]);
-                    loadCommands.add(addShape(soortShape,x,y,width,height));
+                indentationcount = 0;
+                for(int i = 0 ; i < readerTokens.length;i++){
+                    if(readerTokens[i].isBlank()){
+                        indentationcount++;
+                    }
+                }
+                if (readerTokens[indentationcount].equals("rectangle") || readerTokens[indentationcount].equals("ellipse")){
+                    String soortShape = readerTokens[indentationcount];
+                    int x = Integer.parseInt(readerTokens[indentationcount+1]);
+                    int y = Integer.parseInt(readerTokens[indentationcount+2]);
+                    int width = Integer.parseInt(readerTokens[indentationcount+3]);
+                    int height = Integer.parseInt(readerTokens[indentationcount+4]);
+                    loadCommands.add(addShape(soortShape,x,y,width,height,groupCounter));
+                }
+
+                if (readerTokens[indentationcount].equals("group")){
+                    groupCounter++;
+                    loadCommands.add(addGroup(groupCounter));
                 }
             }
         }
         catch (Exception e){
         }
-
         return loadCommands;
     }
 
-    private Command addShape(String soortShape, int x, int y, int width, int height){
+    private Command addShape(String soortShape, int x, int y, int width, int height,int groupID){
         Point start = new Point(x,y);
         Point end = new Point(x+width,y+height);
         drawStrat strategy;
         if(soortShape.equals("ellipse")) strategy = ellipseStrat; else strategy = rectangleStrat;
-        Shape s = new Shape(start,end,strategy);
-        Command c = new AddShapeCommand(s,model);
+        Shape s = new Shape(start,end,strategy,groups.get(groupID));
+        Command c = new AddShapeCommand(s,model,groupID);
         return c;
+    }
+
+    private Command addGroup(int id){
+        Group group;
+        if(groups.isEmpty()){
+            group = new Group(id,null);
+        } else{
+            group = new Group(id,groups.get(id-1));
+        }
+        groups.add(group);
+        Command c = new AddGroupCommand(group,model,id--);
+        return c;
+    }
+
+    private Command addOrnament(){
+        return null;
     }
 }

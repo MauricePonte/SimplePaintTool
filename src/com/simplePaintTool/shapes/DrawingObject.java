@@ -1,6 +1,8 @@
 package com.simplePaintTool.shapes;
 
+import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 public interface DrawingObject {
 
@@ -8,4 +10,7 @@ public interface DrawingObject {
     void select();
     void deselect();
     String toString(int identation);
+    Group getParent();
+    DefaultListModel<DrawingObject> getListInput();
+    List<DrawingObject> getShape();
 }

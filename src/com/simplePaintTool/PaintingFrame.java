@@ -3,12 +3,18 @@ package com.simplePaintTool;
 import com.simplePaintTool.mvc.PaintController;
 import com.simplePaintTool.mvc.PaintObserver;
 import com.simplePaintTool.mvc.PaintView;
+import com.simplePaintTool.shapes.DrawingObject;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 public class PaintingFrame extends JFrame {
     private JPanel mainPanel;
@@ -16,15 +22,19 @@ public class PaintingFrame extends JFrame {
     private PaintController controller;
 
     private final ButtonGroup buttonsGroup;
-    private JToggleButton tglBtnSelect;
+    private JToggleButton tglBtnResize;
+    private JToggleButton tglBtnMove;
     private JToggleButton tglBtnDrawRectangle;
     private JToggleButton tglBtnDrawElipse;
 
+    private JButton btnGroup;
     private JButton btnUndo;
     private JButton btnRedo;
     private JButton btnSave;
     private JButton btnLoad;
-
+    private JLabel l = new JLabel("Selecteer een object");
+    private DefaultListModel<DrawingObject> dataModel = new DefaultListModel();
+    private JList<DrawingObject> b = new JList<>(dataModel);
     // Mouse adapters voor buttons
     private MouseAdapter mouseAdapterUndo;
     private MouseAdapter mouseAdapterRedo;
@@ -45,6 +55,8 @@ public class PaintingFrame extends JFrame {
         buttonsPanelForDrawing.setBackground(Color.GRAY);
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.setBackground(Color.GRAY);
+        JPanel listPanel = new JPanel();
+        listPanel.setBackground(Color.BLUE);
 
         // Comment here
         view = new PaintView();
@@ -64,7 +76,20 @@ public class PaintingFrame extends JFrame {
         buttonsGroup.add(tglBtnDrawElipse);
         buttonsPanel.add(tglBtnDrawElipse);
 
+        //resize button
+        tglBtnResize = new JToggleButton("Resize selection");
+        buttonsGroup.add(tglBtnResize);
+        buttonsPanel.add(tglBtnResize);
+        //move button
+        tglBtnMove = new JToggleButton("Move selection");
+        buttonsGroup.add(tglBtnMove);
+        buttonsPanel.add(tglBtnMove);
+
         // Hier instancieren we overige buttons
+        //addGroup button
+        btnGroup = new JButton("Add Group");
+        btnGroup.setEnabled(true);
+        buttonsPanel.add(btnGroup);
         // Undo button
         btnUndo = new JButton("Undo");
         btnUndo.setEnabled(false);
@@ -81,6 +106,25 @@ public class PaintingFrame extends JFrame {
         btnLoad = new JButton("Load");
         btnLoad.setEnabled(true);
         buttonsPanel.add(btnLoad);
+
+        //poging tot JList met alle shapes enzo.
+        //ListListener called select op het geselecteerde element
+        b.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        listPanel.add(b);
+        b.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if(e.getValueIsAdjusting()){
+                    controller.deselectAll();
+                    DrawingObject d = dataModel.get(b.getSelectedIndex());
+                    d.select();
+                    controller.setSelectedObject(d);
+                    view.repaint();
+                }
+            }
+        });
+
+        mainPanel.add(listPanel,BorderLayout.WEST);
 
         //Action listener van de load button
         btnLoad.addActionListener(new ActionListener() {
@@ -100,6 +144,13 @@ public class PaintingFrame extends JFrame {
                     controller.SaveFileClicked();
                 } catch (FileNotFoundException ex) {
                 }
+            }
+        });
+
+        btnGroup.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                controller.btnAddGroupClicked();
             }
         });
 
@@ -127,9 +178,12 @@ public class PaintingFrame extends JFrame {
             @Override
             public void mouseReleased(MouseEvent e) {
                 pointers[1] = new Point(e.getX(), e.getY());
-
-                if (tglBtnDrawRectangle.isSelected()) controller.btnAddRectangleClicked(pointers);
-                else if(tglBtnDrawElipse.isSelected()) controller.btnAddEllipseClicked(pointers);
+                if(validateDrawing(pointers)){
+                    if (tglBtnDrawRectangle.isSelected()) controller.btnAddRectangleClicked(pointers);
+                    if (tglBtnDrawElipse.isSelected()) controller.btnAddEllipseClicked(pointers);
+                    if (tglBtnResize.isSelected()) controller.btnResizeClicked(pointers);
+                    if (tglBtnMove.isSelected()) controller.btnMoveClicked(pointers);
+                }
             }
         });
 
@@ -137,6 +191,13 @@ public class PaintingFrame extends JFrame {
 
     public PaintView getView() {
         return view;
+    }
+
+    public void setList(DefaultListModel<DrawingObject> list){
+        dataModel.clear();
+        for (int i = 0 ; i < list.size() ; i++){
+            dataModel.addElement(list.get(i));
+        }
     }
 
     public void setController(PaintController controller){
@@ -157,6 +218,16 @@ public class PaintingFrame extends JFrame {
     }
     public MouseAdapter getMouseAdapterRedo() {
         return mouseAdapterRedo;
+    }
+
+    private boolean validateDrawing(Point[] points){
+        int x1 = points[0].x;
+        int x2 = points[1].x;
+        int y1 = points[0].y;
+        int y2 = points[1].y;
+
+        if(Math.abs(x1-x2) > 10 && Math.abs(y1-y2) > 10) return true; else return false;
+
     }
 
 }

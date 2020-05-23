@@ -1,29 +1,39 @@
 package com.simplePaintTool.commands;
 
+import com.simplePaintTool.shapes.DrawingObject;
 import com.simplePaintTool.shapes.Shape;
 
-public class moveShapeCommand implements Command{
-    private Shape shape;
-    private int newX, newY;
-    private int oldX, oldY;
+import java.awt.*;
+import java.util.List;
 
-    public moveShapeCommand(int newX, int newY, Shape s){
-        this.shape = s;
-        this.newX = newX;
-        this.newY = newY;
-        this.oldX = this.shape.getX();
-        this.oldY = this.shape.getY();
+public class moveShapeCommand implements Command{
+    private List<DrawingObject> shapes;
+    int newX,newY;
+
+    public moveShapeCommand(Point[] points, List<DrawingObject> objects){
+        this.shapes = objects;
+        this.newX = points[1].x - points[0].x;
+        this.newY = points[1].y - points[0].y;
     }
 
     @Override
     public void execute() {
-        this.shape.setX(this.newX);
-        this.shape.setY(this.newY);
+        for(DrawingObject d:shapes){
+            if(d instanceof Shape){
+                ((Shape) d).setX(((Shape) d).getX() + newX);
+                ((Shape) d).setY(((Shape) d).getY() + newY);
+            }
+        }
     }
 
     @Override
     public void unexecute() {
-        this.shape.setX(this.oldX);
-        this.shape.setY(this.oldY);
+        for(DrawingObject d:shapes){
+            if(d instanceof Shape){
+                ((Shape) d).setX(((Shape) d).getX() - newX);
+                ((Shape) d).setY(((Shape) d).getY() - newY);
+            }
+        }
     }
+
 }

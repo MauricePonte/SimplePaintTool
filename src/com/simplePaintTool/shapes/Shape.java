@@ -3,20 +3,23 @@ package com.simplePaintTool.shapes;
 import com.simplePaintTool.commands.Command;
 import com.simplePaintTool.strategy.drawStrat;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 
-public class Shape implements DrawingObject{
+public class Shape implements DrawingObject {
     private Color color = Color.BLACK;
 
     private boolean selected;
     private drawStrat drawStrategy;
-
+    private Group parent;
     private int x,y,width,height;
 
-    public Shape(Point startPoint, Point endPoint,drawStrat drawStrategy) {
+    public Shape(Point startPoint, Point endPoint,drawStrat drawStrategy,Group parent) {
         this.drawStrategy = drawStrategy;
         setAfmetingen(startPoint,endPoint);
+        this.parent = parent;
     }
 
     private void setAfmetingen(Point start,Point end){
@@ -28,16 +31,19 @@ public class Shape implements DrawingObject{
 
     @Override
     public void draw(Graphics graphics){
+        graphics.setColor(this.color);
         drawStrategy.draw(graphics,this);
     }
 
     @Override
     public void select(){
+        this.setColor(Color.red);
         this.selected = true;
     }
 
     @Override
     public void deselect(){
+        this.setColor(Color.black);
         this.selected = false;
     }
 
@@ -57,8 +63,6 @@ public class Shape implements DrawingObject{
     public void setColor(Color color) {
         this.color = color;
     }
-
-
 
     public int getX() {
         return x;
@@ -94,7 +98,40 @@ public class Shape implements DrawingObject{
 
     @Override
     public String toString(int identation){
-        String toWrite = drawStrategy.toString() + " " + this.x + " " + this.y + " " + this.width + " " + this.height;
+        String toWrite = "";
+        for (int i = 0; i < identation; i++){
+            toWrite += "  ";
+        }
+        toWrite += drawStrategy.toString() + " " + this.x + " " + this.y + " " + this.width + " " + this.height;
         return toWrite;
+    }
+
+    @Override
+    public String toString(){
+        String returnString = "";
+        for(int i = 0; i <= this.parent.groupID;i++){
+            returnString += "  ";
+        }
+        returnString += drawStrategy.toString() + " " + this.x + " " + this.y + " " + this.width + " " + this.height;
+        return returnString;
+    }
+
+    @Override
+    public Group getParent(){
+        return this.parent;
+    }
+
+    @Override
+    public DefaultListModel<DrawingObject> getListInput(){
+        DefaultListModel<DrawingObject> placeholder = new DefaultListModel<>();
+        placeholder.addElement(this);
+        return placeholder;
+    }
+
+    @Override
+    public java.util.List<DrawingObject> getShape() {
+        List<DrawingObject> list = new ArrayList<>();
+        list.add(this);
+        return list;
     }
 }

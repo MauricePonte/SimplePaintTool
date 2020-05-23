@@ -1,0 +1,29 @@
+package com.simplePaintTool.commands;
+
+import com.simplePaintTool.mvc.PaintModel;
+import com.simplePaintTool.shapes.DrawingObject;
+import com.simplePaintTool.shapes.Group;
+
+public class AddGroupCommand implements Command{
+    private Group group;
+    private PaintModel model;
+    private int groupID;
+
+    public AddGroupCommand(Group group,PaintModel model,int groupID){
+        this.model = model;
+        this.group = group;
+        this.groupID = groupID;
+    }
+
+    @Override
+    public void execute() {
+        //this.model.addShape(this.group,this.groupID);
+        this.model.addShape2(this.group,this.group.getParent());
+    }
+
+    @Override
+    public void unexecute() {
+        this.model.removeShape2(this.group,this.group.getParent());
+    }
+
+}

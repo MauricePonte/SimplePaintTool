@@ -1,6 +1,7 @@
 package com.simplePaintTool.fileIO;
 
 import com.simplePaintTool.mvc.PaintModel;
+import com.simplePaintTool.shapes.DrawingObject;
 import com.simplePaintTool.shapes.Shape;
 
 import java.io.*;
@@ -20,10 +21,14 @@ public class SaveFile {
         final String lineSep=System.getProperty("line.separator");
         BufferedWriter fileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName)));
         try{
-            for (Shape s: model.getAllShapes()) {
-                fileWriter.write(s.toString(1)+lineSep);
+            /*
+            for (DrawingObject s: model.getAllShapes()) {
+                fileWriter.write(s.toString(0)+lineSep);
             }
+             */
+            fileWriter.write(model.GetMainGroup().toString(0));
             fileWriter.close();
+            System.out.println("File is saved");
         }
         catch (Exception e){
         }
