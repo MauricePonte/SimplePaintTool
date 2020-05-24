@@ -1,10 +1,12 @@
 package com.simplePaintTool.shapes;
 
+import com.simplePaintTool.DrawingObjectVisitor.ObjectVisitor;
 import com.simplePaintTool.commands.Command;
 import com.simplePaintTool.strategy.drawStrat;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +35,7 @@ public class Shape implements DrawingObject {
     public void draw(Graphics graphics){
         graphics.setColor(this.color);
         drawStrategy.draw(graphics,this);
+        graphics.drawString("wat",this.x,this.y);
     }
 
     @Override
@@ -97,16 +100,6 @@ public class Shape implements DrawingObject {
     }
 
     @Override
-    public String toString(int identation){
-        String toWrite = "";
-        for (int i = 0; i < identation; i++){
-            toWrite += "  ";
-        }
-        toWrite += drawStrategy.toString() + " " + this.x + " " + this.y + " " + this.width + " " + this.height;
-        return toWrite;
-    }
-
-    @Override
     public String toString(){
         String returnString = "";
         for(int i = 0; i <= this.parent.groupID;i++){
@@ -133,5 +126,11 @@ public class Shape implements DrawingObject {
         List<DrawingObject> list = new ArrayList<>();
         list.add(this);
         return list;
+    }
+
+    //accept voor ObjectVisitor
+    @Override
+    public void accept(ObjectVisitor visitor) throws IOException {
+        visitor.visit(this);
     }
 }

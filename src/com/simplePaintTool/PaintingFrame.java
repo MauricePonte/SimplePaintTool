@@ -12,6 +12,7 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -132,7 +133,7 @@ public class PaintingFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 try {
                     controller.loadSaveFile();
-                } catch (FileNotFoundException ex) {
+                } catch (IOException ioException) {
                 }
             }
         });
@@ -142,7 +143,7 @@ public class PaintingFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 try {
                     controller.SaveFileClicked();
-                } catch (FileNotFoundException ex) {
+                } catch (IOException ex) {
                 }
             }
         });
@@ -150,20 +151,26 @@ public class PaintingFrame extends JFrame {
         btnGroup.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                controller.btnAddGroupClicked();
+                try {
+                    controller.btnAddGroupClicked();
+                } catch (IOException ioException) {}
             }
         });
 
         mouseAdapterRedo = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                controller.redoCommand();
+                try {
+                    controller.redoCommand();
+                } catch (IOException ioException) {}
             }
         };
         mouseAdapterUndo = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                controller.undoCommand();
+                try {
+                    controller.undoCommand();
+                } catch (IOException ioException) {}
             }
         };
 
@@ -178,12 +185,19 @@ public class PaintingFrame extends JFrame {
             @Override
             public void mouseReleased(MouseEvent e) {
                 pointers[1] = new Point(e.getX(), e.getY());
-                if(validateDrawing(pointers)){
-                    if (tglBtnDrawRectangle.isSelected()) controller.btnAddRectangleClicked(pointers);
-                    if (tglBtnDrawElipse.isSelected()) controller.btnAddEllipseClicked(pointers);
-                    if (tglBtnResize.isSelected()) controller.btnResizeClicked(pointers);
-                    if (tglBtnMove.isSelected()) controller.btnMoveClicked(pointers);
-                }
+                    if (tglBtnDrawRectangle.isSelected()) {
+                        try {controller.btnAddRectangleClicked(pointers);} catch (IOException ioException) {}
+                    }
+                    if (tglBtnDrawElipse.isSelected()) {
+                        try {controller.btnAddEllipseClicked(pointers);} catch (IOException ioException) {}
+                    }
+                    if (tglBtnResize.isSelected()) {
+                        try {controller.btnResizeClicked(pointers);} catch (IOException ioException) {}
+                    }
+                    if (tglBtnMove.isSelected()) {
+                        try {controller.btnMoveClicked(pointers);} catch (IOException ioException) {}
+                    }
+
             }
         });
 
@@ -218,16 +232,6 @@ public class PaintingFrame extends JFrame {
     }
     public MouseAdapter getMouseAdapterRedo() {
         return mouseAdapterRedo;
-    }
-
-    private boolean validateDrawing(Point[] points){
-        int x1 = points[0].x;
-        int x2 = points[1].x;
-        int y1 = points[0].y;
-        int y2 = points[1].y;
-
-        if(Math.abs(x1-x2) > 10 && Math.abs(y1-y2) > 10) return true; else return false;
-
     }
 
 }

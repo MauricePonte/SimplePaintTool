@@ -88,7 +88,7 @@ public class LoadFile {
             group = new Group(id,groups.get(id-1));
         }
         groups.add(group);
-        Command c = new AddGroupCommand(group,model,id--);
+        Command c = new AddGroupCommand(group,model);
         return c;
     }
 

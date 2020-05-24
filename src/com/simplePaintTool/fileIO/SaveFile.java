@@ -1,5 +1,7 @@
 package com.simplePaintTool.fileIO;
 
+import com.simplePaintTool.DrawingObjectVisitor.ObjectVisitor;
+import com.simplePaintTool.DrawingObjectVisitor.SaveObjectVisitor;
 import com.simplePaintTool.mvc.PaintModel;
 import com.simplePaintTool.shapes.DrawingObject;
 import com.simplePaintTool.shapes.Shape;
@@ -17,20 +19,15 @@ public class SaveFile {
         this.model = model;
     }
 
-    public void save() throws FileNotFoundException {
-        final String lineSep=System.getProperty("line.separator");
+    public void saveFile(){
+        //ObjectVisitor save = new SaveObjectVisitor(BufferedWriter fileWriter);
+        //model.GetMainGroup().accept(save);
+    }
+    public void save() throws IOException {
         BufferedWriter fileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName)));
-        try{
-            /*
-            for (DrawingObject s: model.getAllShapes()) {
-                fileWriter.write(s.toString(0)+lineSep);
-            }
-             */
-            fileWriter.write(model.GetMainGroup().toString(0));
-            fileWriter.close();
-            System.out.println("File is saved");
-        }
-        catch (Exception e){
-        }
+        ObjectVisitor saveFile = new SaveObjectVisitor(fileWriter);
+        model.GetMainGroup().accept(saveFile);
+        fileWriter.close();
+        System.out.println("File is saved");
     }
 }

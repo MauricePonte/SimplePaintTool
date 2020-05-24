@@ -1,12 +1,7 @@
-group 3
-  group 3
-    group 3
-      group 2
-        ellipse 812 183 258 113
-        ellipse 547 466 346 165
-      rectangle 823 323 147 134
-      ellipse 343 466 180 159
-    ellipse 540 229 142 143
-    rectangle 1050 483 121 133
-  rectangle 292 214 186 127
-  rectangle 1177 344 181 110
+group 5 0
+  rectangle 351 331 268 191
+  rectangle 401 605 268 191
+  ellipse 676 263 268 191
+  ellipse 788 530 268 191
+  group 1 1
+    rectangle 243 50 133 119
