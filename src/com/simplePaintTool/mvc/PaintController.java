@@ -100,7 +100,7 @@ public class PaintController {
     public void btnAddRectangleClicked(Point[] p) throws IOException {
         if(selectedObject instanceof Group){
             Shape s = new Shape(p[0],p[1],rectangleStrat,(Group) selectedObject);
-            executeCommand(new AddShapeCommand(s,model,0));
+            executeCommand(new AddShapeCommand(s,model));
         }else{
             System.out.println("Ik heb geen ouder");
         }
@@ -109,7 +109,7 @@ public class PaintController {
     public void btnAddEllipseClicked(Point[] p) throws IOException {
         if(selectedObject instanceof Group){
             Shape s = new Shape(p[0],p[1],ellipseStrat,(Group) selectedObject);
-            executeCommand(new AddShapeCommand(s,model,0));
+            executeCommand(new AddShapeCommand(s,model));
         }else{
             System.out.println("Ik heb geen ouder");
         }
@@ -144,6 +144,7 @@ public class PaintController {
             executeCommand(loadedCommands.firstElement());
             loadedCommands.remove(loadedCommands.firstElement());
         }
+        System.out.println("The file has been loaded");
     }
 
     //functies voor de JList om objecten te adden removen en deselecteren.
