@@ -2,7 +2,7 @@ package com.simplePaintTool.mvc;
 
 import com.simplePaintTool.DrawingObjectVisitor.ObjectVisitor;
 import com.simplePaintTool.DrawingObjectVisitor.SaveObjectVisitor;
-import com.simplePaintTool.PaintingFrame;
+import com.simplePaintTool.mvc.PaintingFrame;
 import com.simplePaintTool.commands.*;
 import com.simplePaintTool.decorator.*;
 import com.simplePaintTool.fileIO.LoadFile;

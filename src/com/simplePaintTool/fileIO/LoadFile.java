@@ -21,7 +21,7 @@ public class LoadFile {
     drawStrategy ellipseStrat;
     private Stack<Command> loadCommands;
 
-    public LoadFile(String fileName,PaintModel model,drawStrat rect,drawStrat ellips) throws FileNotFoundException {
+    public LoadFile(String fileName,PaintModel model,drawStrategy rect,drawStrategy ellips) throws FileNotFoundException {
         this.fileName = fileName + ".txt";
         this.model = model;
         this.rectangleStrat = rect;
@@ -96,11 +96,13 @@ public class LoadFile {
         }
         fileReader.close();
     }
-
+    // TODO wtf is going on ova here
+    /*
     private Command addOrnament(){
         return null;
     }
-        private Command addGroup(int id){
+
+    private Command addGroup(int id){
         Group group;
         if(groups.isEmpty()){
             group = new Group(id,null);
@@ -115,4 +117,6 @@ public class LoadFile {
     private Command addOrnament(){
         return null;
     }
+
+     */
 }

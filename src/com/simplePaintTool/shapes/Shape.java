@@ -1,8 +1,7 @@
 package com.simplePaintTool.shapes;
 
 import com.simplePaintTool.DrawingObjectVisitor.ObjectVisitor;
-import com.simplePaintTool.commands.Command;
-import com.simplePaintTool.strategy.drawStrat;
+
 
 import javax.swing.*;
 import java.awt.*;
@@ -35,7 +34,7 @@ public class Shape extends DrawingObject {
     public void draw(Graphics graphics){
         graphics.setColor(this.color);
         drawStrategy.draw(graphics,this);
-        graphics.drawString("wat",this.x,this.y);
+        graphics.drawString("wat",super.getX(),super.getY());
     }
 
     @Override
