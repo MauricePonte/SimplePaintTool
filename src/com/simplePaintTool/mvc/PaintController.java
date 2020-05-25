@@ -2,16 +2,18 @@ package com.simplePaintTool.mvc;
 
 import com.simplePaintTool.DrawingObjectVisitor.ObjectVisitor;
 import com.simplePaintTool.DrawingObjectVisitor.SaveObjectVisitor;
-import com.simplePaintTool.PaintingFrame;
+import com.simplePaintTool.mvc.PaintingFrame;
 import com.simplePaintTool.commands.*;
+import com.simplePaintTool.decorator.*;
 import com.simplePaintTool.fileIO.LoadFile;
 import com.simplePaintTool.fileIO.SaveFile;
 import com.simplePaintTool.shapes.DrawingObject;
 import com.simplePaintTool.shapes.Group;
+import com.simplePaintTool.shapes.Ornament;
 import com.simplePaintTool.shapes.Shape;
-import com.simplePaintTool.strategy.EllipseStrat;
-import com.simplePaintTool.strategy.RectangleStrat;
-import com.simplePaintTool.strategy.drawStrat;
+import com.simplePaintTool.strategy.EllipseStrategy;
+import com.simplePaintTool.strategy.RectangleStrategy;
+import com.simplePaintTool.strategy.drawStrategy;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,8 +35,8 @@ public class PaintController {
 
     private int groupCount;
 
-    drawStrat rectangleStrat;
-    drawStrat ellipseStrat;
+    drawStrategy rectangleStrat;
+    drawStrategy ellipseStrat;
 
     private Stack<Command> commands;
     private Stack<Command> undoCommands;
@@ -45,8 +47,8 @@ public class PaintController {
 
         propertyChangeSupport = new PropertyChangeSupport(this);
         // Get strategy pattern through singleton
-        rectangleStrat = RectangleStrat.getInstance();
-        ellipseStrat = EllipseStrat.getInstance();
+        rectangleStrat = RectangleStrategy.getInstance();
+        ellipseStrat = EllipseStrategy.getInstance();
 
         commands = new Stack<>();
         undoCommands = new Stack<>();
@@ -71,10 +73,10 @@ public class PaintController {
         undoCommands.push(commands.pop());
         // Fire property change via observer pattern
         // De command stack is nu leeg dus moet deze button niet gebruikbaar meer zijn
-        if(undoCommands.isEmpty()){
-            propertyChangeSupport.firePropertyChange("undoBtn off",false,true );
+        if(commands.isEmpty()){
+            propertyChangeSupport.firePropertyChange("undoBtn off",true,false );
         }
-        if (undoCommands.size() == 1) {
+        if (!undoCommands.isEmpty()) {
             propertyChangeSupport.firePropertyChange("redoBtn on", false, true);
         }
         // Repaint de shapes
@@ -89,8 +91,11 @@ public class PaintController {
         commands.push(undoCommands.pop());
         // Fire property change via observer pattern
         // De command stack is nu leeg dus moet deze button niet gebruikbaar meer zijn
-        if(commands.isEmpty()){
-            propertyChangeSupport.firePropertyChange("commandStack is empty",false,true );
+        if(undoCommands.isEmpty()){
+            propertyChangeSupport.firePropertyChange("redoBtn off",true,false );
+        }
+        if(!commands.isEmpty()){
+            propertyChangeSupport.firePropertyChange("redoBtn off",true,false );
         }
         // Repaint de shapes
         this.setList(model.getList());
@@ -131,6 +136,36 @@ public class PaintController {
         }
     }
 
+
+
+    // TODO here is my shit code
+    public void btnAddOrnamentClicked() {
+
+        OrnamentOptionsPanel ornamentOptionsPanel = new OrnamentOptionsPanel();
+        ornamentOptionsPanel.setVisible(true);
+        if (ornamentOptionsPanel.isConfirmed()) {
+            String pos = ornamentOptionsPanel.getOrnamentPos();
+            Ornament ornament = new Ornament(ornamentOptionsPanel.getOrnamentText(),ornamentOptionsPanel.getOrnamentPos());
+
+            if(pos.equals("top")){
+                ShapeDecorator topOrnament = new TopOrnamentDecorator(selectedObject,ornament);
+                executeCommand(new AddOrnamentCommand(topOrnament, model));
+            }else if(pos.equals("bottom")){
+                ShapeDecorator bottomOrnament = new BottomOrnamentDecorator(selectedObject,ornament);
+                executeCommand(new AddOrnamentCommand(bottomOrnament, model));
+            }else if(pos.equals("left")){
+                ShapeDecorator leftOrnament = new LeftOrnamentDecorator(selectedObject,ornament);
+                executeCommand(new AddOrnamentCommand(leftOrnament, model));
+            }else if(pos.equals("right")){
+                ShapeDecorator rightOrnament = new RightOrnamentDecorator(selectedObject,ornament);
+                executeCommand(new AddOrnamentCommand(rightOrnament, model));
+            }
+
+
+        }
+
+    }
+
     public void SaveFileClicked() throws IOException {
         SaveFile saveFile = new SaveFile("TestFile",this.model);
         saveFile.save();
@@ -148,8 +183,8 @@ public class PaintController {
     }
 
     //functies voor de JList om objecten te adden removen en deselecteren.
-    public void setList(DefaultListModel<DrawingObject> lijstje){
-        frame.setList(lijstje);
+    public void setList(DefaultListModel<DrawingObject> list){
+        frame.setList(list);
     }
 
     public void deselectAll(){
@@ -167,4 +202,6 @@ public class PaintController {
     public void addPropertyChangedListener(PropertyChangeListener propertyChangeListener) {
         propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
     }
+
+
 }

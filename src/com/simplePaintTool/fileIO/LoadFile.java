@@ -6,25 +6,22 @@ import com.simplePaintTool.commands.Command;
 import com.simplePaintTool.mvc.PaintModel;
 import com.simplePaintTool.shapes.Group;
 import com.simplePaintTool.shapes.Shape;
-import com.simplePaintTool.strategy.EllipseStrat;
-import com.simplePaintTool.strategy.RectangleStrat;
-import com.simplePaintTool.strategy.drawStrat;
+import com.simplePaintTool.strategy.drawStrategy;
 
 import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Queue;
 import java.util.Stack;
 import java.util.List;
 
 public class LoadFile {
     private String fileName;
     private PaintModel model;
-    drawStrat rectangleStrat;
-    drawStrat ellipseStrat;
+    drawStrategy rectangleStrat;
+    drawStrategy ellipseStrat;
     private Stack<Command> loadCommands;
 
-    public LoadFile(String fileName,PaintModel model,drawStrat rect,drawStrat ellips) throws FileNotFoundException {
+    public LoadFile(String fileName,PaintModel model,drawStrategy rect,drawStrategy ellips) throws FileNotFoundException {
         this.fileName = fileName + ".txt";
         this.model = model;
         this.rectangleStrat = rect;
@@ -50,7 +47,7 @@ public class LoadFile {
         int height = Integer.parseInt(readerLine[indentation+4]);
         Point start = new Point(x,y);
         Point end = new Point(x+width,y+height);
-        drawStrat strategy;
+        drawStrategy strategy;
         if(soortShape.equals("ellipse")) strategy = ellipseStrat; else strategy = rectangleStrat;
         Shape s = new Shape(start,end,strategy,parent);
         Command c = new AddShapeCommand(s,model);
@@ -99,8 +96,27 @@ public class LoadFile {
         }
         fileReader.close();
     }
+    // TODO wtf is going on ova here
+    /*
+    private Command addOrnament(){
+        return null;
+    }
+
+    private Command addGroup(int id){
+        Group group;
+        if(groups.isEmpty()){
+            group = new Group(id,null);
+        } else{
+            group = new Group(id,groups.get(id-1));
+        }
+        groups.add(group);
+        Command c = new AddGroupCommand(group,model);
+        return c;
+    }
 
     private Command addOrnament(){
         return null;
     }
+
+     */
 }

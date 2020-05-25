@@ -4,22 +4,21 @@ import com.simplePaintTool.shapes.Shape;
 
 import java.awt.*;
 
-public class RectangleStrat implements drawStrat{
+public class EllipseStrategy implements drawStrategy {
     // Instance of singleton pattern
-    private static drawStrat instance = new RectangleStrat();
+    private static drawStrategy instance = new EllipseStrategy();
     // Method to get instance (Singleton pattern)
-    public static drawStrat getInstance() {
+    public static drawStrategy getInstance() {
         return instance;
     }
-
     @Override
     public void draw(Graphics g, Shape s) {
-        g.drawRect(s.getX(),s.getY(),s.getWidth(),s.getHeight());
+        g.drawOval(s.getX(),s.getY(),s.getWidth(),s.getHeight());
     }
 
     @Override
     public String toString(){
-        return "rectangle";
+        return "ellipse";
     }
-
 }
+

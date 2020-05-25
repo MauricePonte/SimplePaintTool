@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Group implements DrawingObject {
+public class Group extends DrawingObject {
 
     List<DrawingObject> ChildrenObjects;
 
@@ -90,12 +90,18 @@ public class Group implements DrawingObject {
     }
 
     @Override
-    public List<DrawingObject> getShape() {
+    public List<DrawingObject> getCommandListInput() {
         List<DrawingObject> list = new ArrayList<>();
         for(DrawingObject d: ChildrenObjects){
-            list.addAll(d.getShape());
+            list.addAll(d.getCommandListInput());
         }
         return list;
+    }
+
+
+    @Override
+    public DrawingObject getShape() {
+        return this;
     }
 
     //accept voor ObjectVisitor

@@ -1,4 +1,4 @@
-package com.simplePaintTool;
+package com.simplePaintTool.mvc;
 
 import com.simplePaintTool.mvc.PaintController;
 import com.simplePaintTool.mvc.PaintObserver;
@@ -12,10 +12,6 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
 
 public class PaintingFrame extends JFrame {
     private JPanel mainPanel;
@@ -33,9 +29,12 @@ public class PaintingFrame extends JFrame {
     private JButton btnRedo;
     private JButton btnSave;
     private JButton btnLoad;
-    private JLabel l = new JLabel("Selecteer een object");
+
+    private JButton btnAddOrnament;
+
+    private JLabel label = new JLabel("Selecteer een object");
     private DefaultListModel<DrawingObject> dataModel = new DefaultListModel();
-    private JList<DrawingObject> b = new JList<>(dataModel);
+    private JList<DrawingObject> drawingObjectJList = new JList<>(dataModel);
     // Mouse adapters voor buttons
     private MouseAdapter mouseAdapterUndo;
     private MouseAdapter mouseAdapterRedo;
@@ -107,17 +106,21 @@ public class PaintingFrame extends JFrame {
         btnLoad = new JButton("Load");
         btnLoad.setEnabled(true);
         buttonsPanel.add(btnLoad);
+        // Add ornament
+        btnAddOrnament = new JButton("Add ornament");
+        btnAddOrnament.setEnabled(true);
+        buttonsPanel.add(btnAddOrnament);
 
         //poging tot JList met alle shapes enzo.
         //ListListener called select op het geselecteerde element
-        b.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        listPanel.add(b);
-        b.addListSelectionListener(new ListSelectionListener() {
+        drawingObjectJList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        listPanel.add(drawingObjectJList);
+        drawingObjectJList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 if(e.getValueIsAdjusting()){
                     controller.deselectAll();
-                    DrawingObject d = dataModel.get(b.getSelectedIndex());
+                    DrawingObject d = dataModel.get(drawingObjectJList.getSelectedIndex());
                     d.select();
                     controller.setSelectedObject(d);
                     view.repaint();
@@ -133,44 +136,42 @@ public class PaintingFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 try {
                     controller.loadSaveFile();
-                } catch (IOException ioException) {
+                } catch (FileNotFoundException ex) {
                 }
             }
         });
-
         btnSave.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
                     controller.SaveFileClicked();
-                } catch (IOException ex) {
+                } catch (FileNotFoundException ex) {
                 }
             }
         });
-
         btnGroup.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    controller.btnAddGroupClicked();
-                } catch (IOException ioException) {}
+                controller.btnAddGroupClicked();
+            }
+        });
+        btnAddOrnament.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                controller.btnAddOrnamentClicked();
             }
         });
 
         mouseAdapterRedo = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                try {
-                    controller.redoCommand();
-                } catch (IOException ioException) {}
+                controller.redoCommand();
             }
         };
         mouseAdapterUndo = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                try {
-                    controller.undoCommand();
-                } catch (IOException ioException) {}
+                controller.undoCommand();
             }
         };
 
@@ -185,19 +186,12 @@ public class PaintingFrame extends JFrame {
             @Override
             public void mouseReleased(MouseEvent e) {
                 pointers[1] = new Point(e.getX(), e.getY());
-                    if (tglBtnDrawRectangle.isSelected()) {
-                        try {controller.btnAddRectangleClicked(pointers);} catch (IOException ioException) {}
-                    }
-                    if (tglBtnDrawElipse.isSelected()) {
-                        try {controller.btnAddEllipseClicked(pointers);} catch (IOException ioException) {}
-                    }
-                    if (tglBtnResize.isSelected()) {
-                        try {controller.btnResizeClicked(pointers);} catch (IOException ioException) {}
-                    }
-                    if (tglBtnMove.isSelected()) {
-                        try {controller.btnMoveClicked(pointers);} catch (IOException ioException) {}
-                    }
-
+                if(validateDrawing(pointers)){
+                    if (tglBtnDrawRectangle.isSelected()) controller.btnAddRectangleClicked(pointers);
+                    if (tglBtnDrawElipse.isSelected()) controller.btnAddEllipseClicked(pointers);
+                    if (tglBtnResize.isSelected()) controller.btnResizeClicked(pointers);
+                    if (tglBtnMove.isSelected()) controller.btnMoveClicked(pointers);
+                }
             }
         });
 
@@ -232,6 +226,16 @@ public class PaintingFrame extends JFrame {
     }
     public MouseAdapter getMouseAdapterRedo() {
         return mouseAdapterRedo;
+    }
+
+    private boolean validateDrawing(Point[] points){
+        int x1 = points[0].x;
+        int x2 = points[1].x;
+        int y1 = points[0].y;
+        int y2 = points[1].y;
+
+        if(Math.abs(x1-x2) > 10 && Math.abs(y1-y2) > 10) return true; else return false;
+
     }
 
 }

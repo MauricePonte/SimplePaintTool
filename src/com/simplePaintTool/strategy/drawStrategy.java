@@ -4,7 +4,7 @@ import com.simplePaintTool.shapes.Shape;
 
 import java.awt.*;
 
-public interface drawStrat {
+public interface drawStrategy {
     void draw(Graphics g, Shape s);
     String toString();
 }
