@@ -75,7 +75,7 @@ public class Group extends DrawingObject {
                 returnString += "  ";
             }
         }
-        returnString += "group " + ChildrenObjects.size() + " " + this.groupID;
+        returnString += "group " + ChildrenObjects.size();
         return returnString;
     }
 

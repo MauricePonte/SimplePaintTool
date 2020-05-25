@@ -1,14 +1,13 @@
-ornament top "test2"
-ornament top "test1"
-group 4 0
-  ellipse 267 370 300 174
-  ornament top "dfg"
-  ornament top "fasdf"
-  rectangle 596 266 200 162
-  rectangle 142 182 207 121
-  ornament top "fgh"
-  ornament top "fgh"
+ornament left "MEER"
+ornament top "asd"
+group 3 0
+  ornament bottom "asdasasd"
+  ornament top "asd"
+  ellipse 497 131 356 296
+  ornament top "asd"
+  ellipse 287 256 331 376
   group 2 1
-    ornament top "fgh"
-    ellipse 457 94 154 100
-    ellipse 407 231 106 93
+    ornament bottom "okiedokie"
+    ornament top "okey"
+    rectangle 944 117 202 190
+    ellipse 951 413 342 216
