@@ -7,12 +7,10 @@ import com.simplePaintTool.shapes.Group;
 public class AddGroupCommand implements Command{
     private Group group;
     private PaintModel model;
-    private int groupID;
 
-    public AddGroupCommand(Group group,PaintModel model,int groupID){
+    public AddGroupCommand(Group group,PaintModel model){
         this.model = model;
         this.group = group;
-        this.groupID = groupID;
     }
 
     @Override

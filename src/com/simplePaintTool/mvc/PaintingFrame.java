@@ -1,4 +1,4 @@
-package com.simplePaintTool;
+package com.simplePaintTool.mvc;
 
 import com.simplePaintTool.mvc.PaintController;
 import com.simplePaintTool.mvc.PaintObserver;
@@ -12,9 +12,6 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
 
 public class PaintingFrame extends JFrame {
     private JPanel mainPanel;
@@ -32,9 +29,12 @@ public class PaintingFrame extends JFrame {
     private JButton btnRedo;
     private JButton btnSave;
     private JButton btnLoad;
-    private JLabel l = new JLabel("Selecteer een object");
+
+    private JButton btnAddOrnament;
+
+    private JLabel label = new JLabel("Selecteer een object");
     private DefaultListModel<DrawingObject> dataModel = new DefaultListModel();
-    private JList<DrawingObject> b = new JList<>(dataModel);
+    private JList<DrawingObject> drawingObjectJList = new JList<>(dataModel);
     // Mouse adapters voor buttons
     private MouseAdapter mouseAdapterUndo;
     private MouseAdapter mouseAdapterRedo;
@@ -106,17 +106,21 @@ public class PaintingFrame extends JFrame {
         btnLoad = new JButton("Load");
         btnLoad.setEnabled(true);
         buttonsPanel.add(btnLoad);
+        // Add ornament
+        btnAddOrnament = new JButton("Add ornament");
+        btnAddOrnament.setEnabled(true);
+        buttonsPanel.add(btnAddOrnament);
 
         //poging tot JList met alle shapes enzo.
         //ListListener called select op het geselecteerde element
-        b.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        listPanel.add(b);
-        b.addListSelectionListener(new ListSelectionListener() {
+        drawingObjectJList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        listPanel.add(drawingObjectJList);
+        drawingObjectJList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 if(e.getValueIsAdjusting()){
                     controller.deselectAll();
-                    DrawingObject d = dataModel.get(b.getSelectedIndex());
+                    DrawingObject d = dataModel.get(drawingObjectJList.getSelectedIndex());
                     d.select();
                     controller.setSelectedObject(d);
                     view.repaint();
@@ -136,7 +140,6 @@ public class PaintingFrame extends JFrame {
                 }
             }
         });
-
         btnSave.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -146,11 +149,16 @@ public class PaintingFrame extends JFrame {
                 }
             }
         });
-
         btnGroup.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 controller.btnAddGroupClicked();
+            }
+        });
+        btnAddOrnament.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                controller.btnAddOrnamentClicked();
             }
         });
 

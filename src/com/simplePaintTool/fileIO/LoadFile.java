@@ -6,25 +6,22 @@ import com.simplePaintTool.commands.Command;
 import com.simplePaintTool.mvc.PaintModel;
 import com.simplePaintTool.shapes.Group;
 import com.simplePaintTool.shapes.Shape;
-import com.simplePaintTool.strategy.EllipseStrat;
-import com.simplePaintTool.strategy.RectangleStrat;
-import com.simplePaintTool.strategy.drawStrat;
+import com.simplePaintTool.strategy.drawStrategy;
 
 import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Queue;
 import java.util.Stack;
 import java.util.List;
 
 public class LoadFile {
     private String fileName;
     private PaintModel model;
-    drawStrat rectangleStrat;
-    drawStrat ellipseStrat;
+    drawStrategy rectangleStrat;
+    drawStrategy ellipseStrat;
     List<Group> groups = new ArrayList<>();
 
-    public LoadFile(String fileName,PaintModel model,drawStrat rect,drawStrat ellips){
+    public LoadFile(String fileName, PaintModel model, drawStrategy rect, drawStrategy ellips){
         this.fileName = fileName + ".txt";
         this.model = model;
         this.rectangleStrat = rect;
@@ -73,10 +70,10 @@ public class LoadFile {
     private Command addShape(String soortShape, int x, int y, int width, int height,int groupID){
         Point start = new Point(x,y);
         Point end = new Point(x+width,y+height);
-        drawStrat strategy;
+        drawStrategy strategy;
         if(soortShape.equals("ellipse")) strategy = ellipseStrat; else strategy = rectangleStrat;
         Shape s = new Shape(start,end,strategy,groups.get(groupID));
-        Command c = new AddShapeCommand(s,model,groupID);
+        Command c = new AddShapeCommand(s,model);
         return c;
     }
 
@@ -88,7 +85,7 @@ public class LoadFile {
             group = new Group(id,groups.get(id-1));
         }
         groups.add(group);
-        Command c = new AddGroupCommand(group,model,id--);
+        Command c = new AddGroupCommand(group,model);
         return c;
     }
 

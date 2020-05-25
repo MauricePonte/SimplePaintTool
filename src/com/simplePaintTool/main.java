@@ -2,6 +2,7 @@ package com.simplePaintTool;
 
 import com.simplePaintTool.mvc.PaintController;
 import com.simplePaintTool.mvc.PaintModel;
+import com.simplePaintTool.mvc.PaintingFrame;
 
 public class main {
 
