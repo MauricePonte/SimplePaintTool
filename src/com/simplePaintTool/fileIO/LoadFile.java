@@ -19,65 +19,88 @@ public class LoadFile {
     private PaintModel model;
     drawStrategy rectangleStrat;
     drawStrategy ellipseStrat;
-    List<Group> groups = new ArrayList<>();
+    private Stack<Command> loadCommands;
 
-    public LoadFile(String fileName, PaintModel model, drawStrategy rect, drawStrategy ellips){
+    public LoadFile(String fileName,PaintModel model,drawStrat rect,drawStrat ellips) throws FileNotFoundException {
         this.fileName = fileName + ".txt";
         this.model = model;
         this.rectangleStrat = rect;
         this.ellipseStrat = ellips;
+        this.loadCommands = new Stack<>();
     }
 
-    public Stack<Command> load() throws FileNotFoundException {
-        final String lineSep=System.getProperty("line.separator");
-        BufferedReader fileReader = new BufferedReader(new FileReader(fileName)); //Opent de reader waar de matchIDs uit worden gelezen.
-        String readerLine = null;
-        String[] readerTokens;
-        int count = 0;
-        int indentationcount;
-        int groupCounter = -1;
+    public Stack<Command> load() throws IOException {
+        Group firstGroup = new Group(0,null);
+        Command firstGroupCommand = new AddGroupCommand(firstGroup,model);
+        loadCommands.add(firstGroupCommand);
+        addGroup2(0,firstGroup,0);
 
-        Stack<Command> loadCommands = new Stack<>();
-        try{
-            for (readerLine = fileReader.readLine(); readerLine != null; readerLine = fileReader.readLine(),count++){
-                readerTokens = readerLine.split(" ");
-                indentationcount = 0;
-                for(int i = 0 ; i < readerTokens.length;i++){
-                    if(readerTokens[i].isBlank()){
-                        indentationcount++;
-                    }
-                }
-                if (readerTokens[indentationcount].equals("rectangle") || readerTokens[indentationcount].equals("ellipse")){
-                    String soortShape = readerTokens[indentationcount];
-                    int x = Integer.parseInt(readerTokens[indentationcount+1]);
-                    int y = Integer.parseInt(readerTokens[indentationcount+2]);
-                    int width = Integer.parseInt(readerTokens[indentationcount+3]);
-                    int height = Integer.parseInt(readerTokens[indentationcount+4]);
-                    loadCommands.add(addShape(soortShape,x,y,width,height,groupCounter));
-                }
-
-                if (readerTokens[indentationcount].equals("group")){
-                    groupCounter++;
-                    loadCommands.add(addGroup(groupCounter));
-                }
-            }
-        }
-        catch (Exception e){
-        }
         return loadCommands;
     }
 
-    private Command addShape(String soortShape, int x, int y, int width, int height,int groupID){
+    private void addShape2(String[] readerLine,int indentation,Group parent){
+
+        String soortShape = readerLine[indentation];
+        int x = Integer.parseInt(readerLine[indentation+1]);
+        int y = Integer.parseInt(readerLine[indentation+2]);
+        int width = Integer.parseInt(readerLine[indentation+3]);
+        int height = Integer.parseInt(readerLine[indentation+4]);
         Point start = new Point(x,y);
         Point end = new Point(x+width,y+height);
         drawStrategy strategy;
         if(soortShape.equals("ellipse")) strategy = ellipseStrat; else strategy = rectangleStrat;
-        Shape s = new Shape(start,end,strategy,groups.get(groupID));
+        Shape s = new Shape(start,end,strategy,parent);
         Command c = new AddShapeCommand(s,model);
-        return c;
+        loadCommands.add(c);
     }
 
-    private Command addGroup(int id){
+    private void addGroup2(int indentation,Group parent,int lineCount) throws IOException {
+        BufferedReader fileReader = new BufferedReader(new FileReader(fileName));
+
+        String readerLine = null;
+        String[] readerTokens;
+        int counter = 0;
+        int start = lineCount;
+        int groupID = (indentation+2) / 2;
+        boolean keepReading = true;
+
+        while((readerLine = fileReader.readLine()) != null && keepReading){
+            readerTokens = readerLine.split(" ");
+            if(counter > start) {
+                if (readerTokens.length > indentation) {
+                    if (readerTokens[indentation].equals("group")) {
+                        keepReading = false;
+                    } else {
+                        int indentationcount = 0;
+                        for (int i = 0; i < readerTokens.length; i++) {
+                            if (readerTokens[i].isBlank()) {
+                                indentationcount++;
+                            }
+                        }
+                        if (indentationcount == (indentation + 2)) {
+                            if (readerTokens[indentationcount].equals("group")) {
+                                Group newGroup = new Group(groupID, parent);
+                                Command c = new AddGroupCommand(newGroup, model);
+                                loadCommands.add(c);
+                                addGroup2(indentationcount, newGroup, counter);
+                            }
+                            if (readerTokens[indentationcount].equals("ellipse") ||
+                                    readerTokens[indentationcount].equals("rectangle")) {
+                                addShape2(readerTokens, indentationcount, parent);
+                            }
+                        }
+                    }
+                }
+            }
+            counter++;
+        }
+        fileReader.close();
+    }
+
+    private Command addOrnament(){
+        return null;
+    }
+        private Command addGroup(int id){
         Group group;
         if(groups.isEmpty()){
             group = new Group(id,null);

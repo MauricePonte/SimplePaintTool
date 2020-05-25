@@ -1,7 +1,10 @@
 package com.simplePaintTool.shapes;
 
+import com.simplePaintTool.DrawingObjectVisitor.ObjectVisitor;
+
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,21 +59,6 @@ public class Group extends DrawingObject {
     }
 
     @Override
-    public String toString(int identation){
-        final String lineSep=System.getProperty("line.separator");
-        String toWrite = "";
-        for (int i = 0; i < identation; i++){
-            toWrite += "  ";
-        }
-        toWrite += "group " + ChildrenObjects.size();
-        identation++;
-        for (DrawingObject d:ChildrenObjects){
-            toWrite += lineSep+d.toString(identation);
-        }
-        return toWrite;
-    }
-
-    @Override
     public String toString(){
         String returnString = "";
         if(this.parent != null){
@@ -78,7 +66,7 @@ public class Group extends DrawingObject {
                 returnString += "  ";
             }
         }
-        returnString += "group " + ChildrenObjects.size();
+        returnString += "group " + ChildrenObjects.size() + " " + this.groupID;
         return returnString;
     }
 
@@ -114,5 +102,15 @@ public class Group extends DrawingObject {
     @Override
     public DrawingObject getShape() {
         return this;
+    }
+
+    //accept voor ObjectVisitor
+    @Override
+    public void accept(ObjectVisitor visitor) throws IOException {
+        visitor.visit(this);
+        for (DrawingObject d:ChildrenObjects){
+            d.accept(visitor);
+        }
+
     }
 }

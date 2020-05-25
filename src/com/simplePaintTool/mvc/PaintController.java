@@ -1,5 +1,8 @@
 package com.simplePaintTool.mvc;
 
+import com.simplePaintTool.DrawingObjectVisitor.ObjectVisitor;
+import com.simplePaintTool.DrawingObjectVisitor.SaveObjectVisitor;
+import com.simplePaintTool.PaintingFrame;
 import com.simplePaintTool.commands.*;
 import com.simplePaintTool.decorator.*;
 import com.simplePaintTool.fileIO.LoadFile;
@@ -18,6 +21,8 @@ import java.awt.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Stack;
 import java.util.List;
 
@@ -25,7 +30,9 @@ public class PaintController {
     private PropertyChangeSupport propertyChangeSupport;
     private PaintModel model;
     private PaintingFrame frame;
+
     private DrawingObject selectedObject;
+
     private int groupCount;
 
     drawStrategy rectangleStrat;
@@ -49,7 +56,7 @@ public class PaintController {
         this.setList(model.getList());
     }
 
-    private void executeCommand(Command c){
+    private void executeCommand(Command c) throws IOException {
         c.execute();
         commands.push(c);
         if(!commands.isEmpty()){
@@ -59,7 +66,7 @@ public class PaintController {
         frame.getView().repaint();
     }
 
-    public void undoCommand(){
+    public void undoCommand() throws IOException {
         // Haal de eerste command op de stack op en unexecute deze
         commands.peek().unexecute();
         // Haal deze van de commandStack af, en zet deze op de undoCommandsStack
@@ -77,7 +84,7 @@ public class PaintController {
         frame.getView().repaint();
     }
 
-    public void redoCommand(){
+    public void redoCommand() throws IOException {
         // Haal de eerste command op de stack op en unexecute deze
         undoCommands.peek().execute();
         // Haal deze van de commandStack af, en zet deze op de undoCommandsStack
@@ -95,7 +102,7 @@ public class PaintController {
         frame.getView().repaint();
     }
 
-    public void btnAddRectangleClicked(Point[] p) {
+    public void btnAddRectangleClicked(Point[] p) throws IOException {
         if(selectedObject instanceof Group){
             Shape s = new Shape(p[0],p[1],rectangleStrat,(Group) selectedObject);
             executeCommand(new AddShapeCommand(s,model));
@@ -104,7 +111,7 @@ public class PaintController {
         }
     }
 
-    public void btnAddEllipseClicked(Point[] p) {
+    public void btnAddEllipseClicked(Point[] p) throws IOException {
         if(selectedObject instanceof Group){
             Shape s = new Shape(p[0],p[1],ellipseStrat,(Group) selectedObject);
             executeCommand(new AddShapeCommand(s,model));
@@ -113,26 +120,25 @@ public class PaintController {
         }
     }
 
-    public void btnResizeClicked(Point[] p){
-        List<DrawingObject> objectsToResize = selectedObject.getCommandListInput();
-        executeCommand(new resizeShapeCommand(p,objectsToResize));
+    public void btnResizeClicked(Point[] p) throws IOException {
+        executeCommand(new resizeShapeCommand(p,selectedObject));
     }
 
-    public void btnMoveClicked(Point[] p){
-        List<DrawingObject> objectsToMove = selectedObject.getCommandListInput();
-        executeCommand(new moveShapeCommand(p,objectsToMove));
+    public void btnMoveClicked(Point[] p) throws IOException {
+        executeCommand(new moveShapeCommand(p,selectedObject));
     }
 
-    public void btnAddGroupClicked(){
+    public void btnAddGroupClicked() throws IOException {
         if(selectedObject instanceof Group){
-            groupCount++;
-            Group s = new Group(groupCount,(Group) selectedObject);
+            Group s = new Group(((Group) selectedObject).getGroupID()+1,(Group) selectedObject);
             executeCommand(new AddGroupCommand(s,model));
         }else{
-            System.out.println("Ik heb geen ouder");
         }
     }
 
+
+
+    // TODO here is my shit code
     public void btnAddOrnamentClicked() {
 
         OrnamentOptionsPanel ornamentOptionsPanel = new OrnamentOptionsPanel();
@@ -160,12 +166,12 @@ public class PaintController {
 
     }
 
-    public void SaveFileClicked() throws FileNotFoundException {
+    public void SaveFileClicked() throws IOException {
         SaveFile saveFile = new SaveFile("TestFile",this.model);
         saveFile.save();
     }
 
-    public void loadSaveFile() throws FileNotFoundException {
+    public void loadSaveFile() throws IOException {
         this.model.clearCanvas();
         LoadFile loadfile = new LoadFile("TestFile",this.model,this.rectangleStrat,this.ellipseStrat);
         Stack<Command> loadedCommands = loadfile.load();
@@ -173,6 +179,7 @@ public class PaintController {
             executeCommand(loadedCommands.firstElement());
             loadedCommands.remove(loadedCommands.firstElement());
         }
+        System.out.println("The file has been loaded");
     }
 
     //functies voor de JList om objecten te adden removen en deselecteren.

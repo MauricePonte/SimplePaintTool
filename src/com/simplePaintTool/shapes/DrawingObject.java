@@ -1,7 +1,10 @@
 package com.simplePaintTool.shapes;
 
+import com.simplePaintTool.DrawingObjectVisitor.ObjectVisitor;
+
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.util.List;
 
 public abstract class DrawingObject {

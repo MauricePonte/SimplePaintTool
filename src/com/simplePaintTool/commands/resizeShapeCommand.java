@@ -1,46 +1,36 @@
 package com.simplePaintTool.commands;
 
+import com.simplePaintTool.DrawingObjectVisitor.ObjectVisitor;
+import com.simplePaintTool.DrawingObjectVisitor.ResizeObjectVisitor;
+import com.simplePaintTool.DrawingObjectVisitor.UnResizeObjectVisitor;
 import com.simplePaintTool.shapes.DrawingObject;
 import com.simplePaintTool.shapes.Shape;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.List;
 
 public class resizeShapeCommand implements Command{
-    private List<DrawingObject> shapes;
-    private int newHeight, newWidth;
+    private DrawingObject shape;
+    private ObjectVisitor doVisitor;
+    private ObjectVisitor undoVisitor;
 
-    public resizeShapeCommand(Point[] points, List<DrawingObject> objects){
-        this.shapes = objects;
-        this.newHeight = points[1].y - points[0].y;
-        this.newWidth = points[1].x - points[0].x;
+    public resizeShapeCommand(Point[] points, DrawingObject object){
+        this.shape = object;
+        int newHeight = points[1].y - points[0].y;
+        int newWidth = points[1].x - points[0].x;
+        this.doVisitor = new ResizeObjectVisitor(newHeight,newWidth);
+        this.undoVisitor = new UnResizeObjectVisitor(newHeight,newWidth);
     }
 
     @Override
-    public void execute() {
-        for(DrawingObject s: shapes){
-            if(s instanceof Shape){
-                int width = ((Shape) s).getWidth() + this.newWidth;
-                int height = ((Shape) s).getHeight() + this.newHeight;
-
-                if(width <= 10) width = 10;
-                if(height <= 10) height = 10;
-
-                ((Shape) s).setWidth(width);
-                ((Shape) s).setHeight(height);
-
-            }
-        }
+    public void execute() throws IOException {
+        this.shape.accept(doVisitor);
     }
 
     @Override
-    public void unexecute() {
-        for(DrawingObject s: shapes){
-            if(s instanceof Shape){
-                ((Shape) s).setHeight(((Shape) s).getHeight() - this.newHeight);
-                ((Shape) s).setWidth(((Shape) s).getWidth() - this.newWidth);
-            }
-        }
+    public void unexecute() throws IOException {
+        this.shape.accept(undoVisitor);
     }
 
 
