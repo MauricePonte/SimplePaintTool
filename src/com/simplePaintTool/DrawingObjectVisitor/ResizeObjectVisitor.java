@@ -1,7 +1,12 @@
 package com.simplePaintTool.DrawingObjectVisitor;
 
+import com.simplePaintTool.decorator.ShapeDecorator;
+import com.simplePaintTool.shapes.DrawingObject;
 import com.simplePaintTool.shapes.Group;
+import com.simplePaintTool.shapes.Ornament;
 import com.simplePaintTool.shapes.Shape;
+
+import java.io.IOException;
 
 public class ResizeObjectVisitor implements ObjectVisitor{
 
@@ -28,4 +33,10 @@ public class ResizeObjectVisitor implements ObjectVisitor{
         s.setWidth(width);
         s.setHeight(height);
     }
+
+    @Override
+    public void visit(ShapeDecorator s) throws IOException {
+
+    }
+
 }

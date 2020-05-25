@@ -15,6 +15,7 @@ public class Group extends DrawingObject {
     int groupID;
     boolean selected;
     private Group parent;
+    private boolean primaryObject;
 
     public Group(int id,Group parent){
         this.groupID = id;
@@ -45,6 +46,7 @@ public class Group extends DrawingObject {
         }
     }
 
+
     public void addChild(DrawingObject d){
         this.ChildrenObjects.add(d);
     }
@@ -56,6 +58,13 @@ public class Group extends DrawingObject {
     //geeft het groupID terug zodat de DrawingObjects in de juiste groepen terecht komen.
     public int getGroupID(){
         return this.groupID;
+    }
+
+    public int getIndexOfChild(DrawingObject d){
+        return ChildrenObjects.indexOf(d);
+    }
+    public void insertChildAtIndex(DrawingObject d,int i){
+        ChildrenObjects.add(i,d);
     }
 
     @Override
@@ -112,5 +121,43 @@ public class Group extends DrawingObject {
             d.accept(visitor);
         }
 
+    }
+
+    @Override
+    public int getX(){
+        int smallX = 3000;
+        if(ChildrenObjects.size() == 0 ) smallX = 500;
+        for(DrawingObject d:ChildrenObjects){
+            if(d.getX() < smallX) smallX = d.getX();
+        }
+        return smallX - 10;
+    }
+
+    @Override
+    public int getY(){
+        int smallY = 3000;
+        if(ChildrenObjects.size() == 0 ) smallY = 500;
+        for(DrawingObject d:ChildrenObjects){
+            if(d.getY() < smallY)smallY = d.getY();
+        }
+        return smallY - 10;
+    }
+
+    @Override
+    public int getWidth(){
+        int bigX = 0;
+        for(DrawingObject d:ChildrenObjects){
+            if(d.getX()+d.getWidth() > bigX) bigX = d.getX()+d.getWidth();
+        }
+        return bigX-this.getX();
+    }
+
+    @Override
+    public int getHeight(){
+        int bigY = 0;
+        for(DrawingObject d: ChildrenObjects){
+            if(d.getY()+d.getHeight() > bigY) bigY = d.getY()+d.getHeight();
+        }
+        return bigY-this.getY();
     }
 }

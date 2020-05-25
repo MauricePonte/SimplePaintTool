@@ -11,11 +11,11 @@ public class AddGroupCommand implements Command{
     public AddGroupCommand(Group group,PaintModel model){
         this.model = model;
         this.group = group;
+        group.setPrimaryObject(true);
     }
 
     @Override
     public void execute() {
-        //this.model.addShape(this.group,this.groupID);
         this.model.addShape2(this.group,this.group.getParent());
     }
 

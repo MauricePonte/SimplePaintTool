@@ -107,7 +107,7 @@ public class PaintController {
             Shape s = new Shape(p[0],p[1],rectangleStrat,(Group) selectedObject);
             executeCommand(new AddShapeCommand(s,model));
         }else{
-            System.out.println("Ik heb geen ouder");
+            System.out.println("Geen group/hoogste Ornamen van group geselecteerd");
         }
     }
 
@@ -116,7 +116,7 @@ public class PaintController {
             Shape s = new Shape(p[0],p[1],ellipseStrat,(Group) selectedObject);
             executeCommand(new AddShapeCommand(s,model));
         }else{
-            System.out.println("Ik heb geen ouder");
+            System.out.println("Geen group/hoogste Ornamen van group geselecteerd");
         }
     }
 
@@ -133,37 +133,45 @@ public class PaintController {
             Group s = new Group(((Group) selectedObject).getGroupID()+1,(Group) selectedObject);
             executeCommand(new AddGroupCommand(s,model));
         }else{
+            System.out.println("Geen group/hoogste Ornamen van group geselecteerd");
         }
     }
 
 
 
     // TODO here is my shit code
-    public void btnAddOrnamentClicked() {
+    public void btnAddOrnamentClicked() throws IOException {
+        if(selectedObject.getPrimaryObject()) {
+            OrnamentOptionsPanel ornamentOptionsPanel = new OrnamentOptionsPanel();
+            ornamentOptionsPanel.setVisible(true);
+            if (ornamentOptionsPanel.isConfirmed()) {
+                String pos = ornamentOptionsPanel.getOrnamentPos();
+                // hier creeëren we een nieuw ornament.
+                Ornament ornament = new Ornament('"' + ornamentOptionsPanel.getOrnamentText() + '"', ornamentOptionsPanel.getOrnamentPos());
+                ShapeDecorator newDecorator = null;
+                //hier wordt op basis van een switch case een ShapeDecorator aangemaakt.
+                switch (pos) {
+                    case "top":
+                        newDecorator = new TopOrnamentDecorator(selectedObject, ornament);
+                        break;
+                    case "bottom":
+                        newDecorator = new BottomOrnamentDecorator(selectedObject, ornament);
+                        break;
+                    case "left":
+                        newDecorator = new LeftOrnamentDecorator(selectedObject, ornament);
+                        break;
+                    case "right":
+                        newDecorator = new RightOrnamentDecorator(selectedObject, ornament);
+                        break;
+                    default:
+                        break;
+                }
 
-        OrnamentOptionsPanel ornamentOptionsPanel = new OrnamentOptionsPanel();
-        ornamentOptionsPanel.setVisible(true);
-        if (ornamentOptionsPanel.isConfirmed()) {
-            String pos = ornamentOptionsPanel.getOrnamentPos();
-            Ornament ornament = new Ornament(ornamentOptionsPanel.getOrnamentText(),ornamentOptionsPanel.getOrnamentPos());
-
-            if(pos.equals("top")){
-                ShapeDecorator topOrnament = new TopOrnamentDecorator(selectedObject,ornament);
-                executeCommand(new AddOrnamentCommand(topOrnament, model));
-            }else if(pos.equals("bottom")){
-                ShapeDecorator bottomOrnament = new BottomOrnamentDecorator(selectedObject,ornament);
-                executeCommand(new AddOrnamentCommand(bottomOrnament, model));
-            }else if(pos.equals("left")){
-                ShapeDecorator leftOrnament = new LeftOrnamentDecorator(selectedObject,ornament);
-                executeCommand(new AddOrnamentCommand(leftOrnament, model));
-            }else if(pos.equals("right")){
-                ShapeDecorator rightOrnament = new RightOrnamentDecorator(selectedObject,ornament);
-                executeCommand(new AddOrnamentCommand(rightOrnament, model));
+                if (newDecorator != null) {
+                    executeCommand(new AddOrnamentCommand(newDecorator, model, selectedObject));
+                }
             }
-
-
         }
-
     }
 
     public void SaveFileClicked() throws IOException {
@@ -174,7 +182,8 @@ public class PaintController {
     public void loadSaveFile() throws IOException {
         this.model.clearCanvas();
         LoadFile loadfile = new LoadFile("TestFile",this.model,this.rectangleStrat,this.ellipseStrat);
-        Stack<Command> loadedCommands = loadfile.load();
+        //Stack<Command> loadedCommands = loadfile.load();
+        Stack<Command> loadedCommands = loadfile.initialGroup();
         while(loadedCommands.size() > 0){
             executeCommand(loadedCommands.firstElement());
             loadedCommands.remove(loadedCommands.firstElement());

@@ -6,69 +6,55 @@ import com.simplePaintTool.shapes.Shape;
 
 import javax.swing.*;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 public class PaintModel {
-    private Group mainGroup;
-    //private ArrayList<DrawingObject> shapes;
+    private DrawingObject mainGroup;
 
     public PaintModel(){
-        //shapes = new ArrayList<>();
-        //shapes.add(new Group(0));
         mainGroup = new Group(0,null);
+        mainGroup.setPrimaryObject(true);
     }
 
-    /**
-     * Add a shape to the model
-     * @param  shape to add
-     */
-    /*
-    public void addShape(DrawingObject s,int groupID){
-        if(shapes.isEmpty()){
-            shapes.add(s);
-        }else {
-            for (DrawingObject d : shapes) {
-                if (d instanceof Group) {
-                    if (((Group) d).getGroupID() == groupID) {
-                        ((Group) d).addChild(s);
-                    }
-                }
-            }
-        }
-    }
-
-     */
 
     //test add
     public void addShape2(DrawingObject shape,Group parent){
         try{
             parent.addChild(shape);
         }catch (Exception e){
-            mainGroup = (Group) shape;
+            mainGroup = shape;
         }
     }
 
     public void removeShape2(DrawingObject shape, Group parent){
         parent.removeChild(shape);
     }
-    /**
-     * Remove a shape from the model
-     * @param s shape to remove
-     */
-    /*
-    public void removeShape(Shape s,int groupID){
-        for (DrawingObject d: shapes) {
-            if (((Group) d).getGroupID() == groupID){
-                ((Group) d).removeChild(s);
-            }
+
+    public void addDecorator(DrawingObject decorator,DrawingObject original,Group parent){
+        try{
+            int i = parent.getIndexOfChild(original);
+            parent.insertChildAtIndex(decorator,i);
+            parent.removeChild(original);
+        }catch (Exception e){
+            mainGroup = decorator;
         }
     }
-     */
+    public void removeDecorator(DrawingObject decorator,DrawingObject original,Group parent){
+        try{
+            int i = parent.getIndexOfChild(decorator);
+            parent.insertChildAtIndex(original,i);
+            parent.removeChild(decorator);
+        }catch (Exception e){
+            mainGroup = original;
+        }
+
+    }
 
     /**
      * Return all shapes in this model
      * @return All shapes
      */
-    public Group GetMainGroup(){
+    public DrawingObject GetMainGroup(){
         return this.mainGroup;
     }
 

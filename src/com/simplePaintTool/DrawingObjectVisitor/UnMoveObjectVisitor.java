@@ -1,7 +1,12 @@
 package com.simplePaintTool.DrawingObjectVisitor;
 
+import com.simplePaintTool.decorator.ShapeDecorator;
+import com.simplePaintTool.shapes.DrawingObject;
 import com.simplePaintTool.shapes.Group;
+import com.simplePaintTool.shapes.Ornament;
 import com.simplePaintTool.shapes.Shape;
+
+import java.io.IOException;
 
 public class UnMoveObjectVisitor implements ObjectVisitor{
 
@@ -22,4 +27,10 @@ public class UnMoveObjectVisitor implements ObjectVisitor{
         s.setX(s.getX() - newX);
         s.setY(s.getY() - newY);
     }
+
+    @Override
+    public void visit(ShapeDecorator s) throws IOException {
+
+    }
+
 }

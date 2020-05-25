@@ -1,20 +1,14 @@
-group 5 0
-  rectangle 238 111 220 133
-  rectangle 238 273 156 120
-  rectangle 490 314 225 158
-  group 5 1
-    group 3 2
-      ellipse 102 235 123 119
-      ellipse 555 86 112 121
-      group 2 3
-        ellipse 538 492 147 128
-        ellipse 643 213 104 52
-    ellipse 25 18 189 167
-    ellipse 103 441 86 46
-    group 1 2
-      group 2 3
-        ellipse 538 492 147 128
-        ellipse 643 213 104 52
-    ellipse 391 527 102 112
-  group 1 1
-    ellipse 391 527 102 112
+ornament top "test2"
+ornament top "test1"
+group 4 0
+  ellipse 267 370 300 174
+  ornament top "dfg"
+  ornament top "fasdf"
+  rectangle 596 266 200 162
+  rectangle 142 182 207 121
+  ornament top "fgh"
+  ornament top "fgh"
+  group 2 1
+    ornament top "fgh"
+    ellipse 457 94 154 100
+    ellipse 407 231 106 93

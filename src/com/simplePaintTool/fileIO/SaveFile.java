@@ -6,6 +6,7 @@ import com.simplePaintTool.mvc.PaintModel;
 import com.simplePaintTool.shapes.DrawingObject;
 import com.simplePaintTool.shapes.Shape;
 
+import javax.swing.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,8 @@ public class SaveFile {
     public void save() throws IOException {
         BufferedWriter fileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName)));
         ObjectVisitor saveFile = new SaveObjectVisitor(fileWriter);
+        DefaultListModel<DrawingObject> list = model.GetMainGroup().getListInput();
+
         model.GetMainGroup().accept(saveFile);
         fileWriter.close();
         System.out.println("File is saved");

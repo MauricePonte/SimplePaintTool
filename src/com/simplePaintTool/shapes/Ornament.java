@@ -1,10 +1,12 @@
 package com.simplePaintTool.shapes;
 
+import com.simplePaintTool.DrawingObjectVisitor.ObjectVisitor;
 import com.simplePaintTool.shapes.DrawingObject;
 import com.simplePaintTool.shapes.Group;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.util.List;
 
 public class Ornament extends DrawingObject {
@@ -29,6 +31,10 @@ public class Ornament extends DrawingObject {
         this.y = y;
     }
 
+    public int stringBuffer(){
+        return text.length()*2;
+    }
+
     @Override
     public void draw(Graphics graphics) {
         graphics.drawString(text,x,y);
@@ -45,8 +51,8 @@ public class Ornament extends DrawingObject {
     }
 
     @Override
-    public String toString(int identation) {
-        return null;
+    public String toString() {
+        return "ornament " + this.pos + " " + text;
     }
 
     @Override
@@ -67,5 +73,10 @@ public class Ornament extends DrawingObject {
     @Override
     public DrawingObject getShape() {
         return this;
+    }
+
+    @Override
+    public void accept(ObjectVisitor visitor) throws IOException {
+
     }
 }

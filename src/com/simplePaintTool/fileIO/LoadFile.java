@@ -1,10 +1,14 @@
 package com.simplePaintTool.fileIO;
 
 import com.simplePaintTool.commands.AddGroupCommand;
+import com.simplePaintTool.commands.AddOrnamentCommand;
 import com.simplePaintTool.commands.AddShapeCommand;
 import com.simplePaintTool.commands.Command;
+import com.simplePaintTool.decorator.*;
 import com.simplePaintTool.mvc.PaintModel;
+import com.simplePaintTool.shapes.DrawingObject;
 import com.simplePaintTool.shapes.Group;
+import com.simplePaintTool.shapes.Ornament;
 import com.simplePaintTool.shapes.Shape;
 import com.simplePaintTool.strategy.drawStrategy;
 
@@ -20,6 +24,7 @@ public class LoadFile {
     drawStrategy rectangleStrat;
     drawStrategy ellipseStrat;
     private Stack<Command> loadCommands;
+    private DrawingObject newParent;
 
     public LoadFile(String fileName,PaintModel model,drawStrategy rect,drawStrategy ellips) throws FileNotFoundException {
         this.fileName = fileName + ".txt";
@@ -38,7 +43,7 @@ public class LoadFile {
         return loadCommands;
     }
 
-    private void addShape2(String[] readerLine,int indentation,Group parent){
+    private void addShape2(String[] readerLine,int indentation,Group parent,List<String[]> stringArrays){
 
         String soortShape = readerLine[indentation];
         int x = Integer.parseInt(readerLine[indentation+1]);
@@ -52,6 +57,7 @@ public class LoadFile {
         Shape s = new Shape(start,end,strategy,parent);
         Command c = new AddShapeCommand(s,model);
         loadCommands.add(c);
+        if(stringArrays.size() >0 ) loadCommands.addAll(addOrnaments(stringArrays,s));
     }
 
     private void addGroup2(int indentation,Group parent,int lineCount) throws IOException {
@@ -63,6 +69,7 @@ public class LoadFile {
         int start = lineCount;
         int groupID = (indentation+2) / 2;
         boolean keepReading = true;
+        List<String[]> stringArrays = new ArrayList<>();
 
         while((readerLine = fileReader.readLine()) != null && keepReading){
             readerTokens = readerLine.split(" ");
@@ -78,15 +85,25 @@ public class LoadFile {
                             }
                         }
                         if (indentationcount == (indentation + 2)) {
+                            if(readerTokens[indentationcount].equals("ornament")){
+                                String[] ornament = new String[2];
+                                ornament[0] = readerTokens[indentationcount+1];
+                                ornament[1] = readerTokens[indentationcount+2];
+                                stringArrays.add(ornament);
+                            }
+
                             if (readerTokens[indentationcount].equals("group")) {
                                 Group newGroup = new Group(groupID, parent);
                                 Command c = new AddGroupCommand(newGroup, model);
                                 loadCommands.add(c);
+                                if(stringArrays.size() >0 ) loadCommands.addAll(addOrnaments(stringArrays,newGroup));
+                                stringArrays.clear();
                                 addGroup2(indentationcount, newGroup, counter);
                             }
                             if (readerTokens[indentationcount].equals("ellipse") ||
                                     readerTokens[indentationcount].equals("rectangle")) {
-                                addShape2(readerTokens, indentationcount, parent);
+                                addShape2(readerTokens, indentationcount, parent,stringArrays);
+                                stringArrays.clear();
                             }
                         }
                     }
@@ -97,26 +114,72 @@ public class LoadFile {
         fileReader.close();
     }
     // TODO wtf is going on ova here
-    /*
-    private Command addOrnament(){
-        return null;
-    }
 
-    private Command addGroup(int id){
-        Group group;
-        if(groups.isEmpty()){
-            group = new Group(id,null);
-        } else{
-            group = new Group(id,groups.get(id-1));
+    public Stack<Command> initialGroup() throws IOException {
+        BufferedReader fileReader = new BufferedReader(new FileReader(fileName));
+        String[] readerTokens;
+        boolean keepReading = true;
+        Group firstGroup = new Group(0,null);
+        List<String[]> stringArrays = new ArrayList<>();
+
+        while(keepReading){
+            readerTokens = fileReader.readLine().split(" ");
+
+            if(readerTokens[0].equals("ornament")){
+                String[] ornament = new String[2];
+                ornament[0] = readerTokens[1];
+                ornament[1] = readerTokens[2];
+                stringArrays.add(ornament);
+            }
+            if (readerTokens[0].equals("group")) {
+                Command c = new AddGroupCommand(firstGroup,model);
+                loadCommands.add(c);
+                keepReading = false;
+                if(stringArrays.size() >0 ) loadCommands.addAll(addOrnaments(stringArrays,firstGroup));
+                stringArrays.clear();
+                addGroup2(0,firstGroup,loadCommands.size()-1);
+            }
+
         }
-        groups.add(group);
-        Command c = new AddGroupCommand(group,model);
-        return c;
+        fileReader.close();
+        return loadCommands;
     }
 
-    private Command addOrnament(){
-        return null;
+    private Stack<Command> addOrnaments(List<String[]> stringArrayList, DrawingObject parent){
+        Stack<Command> ornamentCommands = new Stack<>();
+        DrawingObject myParent = parent;
+        ShapeDecorator newDecorator = null;
+
+        while(stringArrayList.size() > 0){
+            int lastArray = stringArrayList.size() - 1;
+            Ornament ornament = new Ornament(stringArrayList.get(lastArray)[1],stringArrayList.get(lastArray)[0]);
+            switch (ornament.getPos()) {
+                case "top":
+                    newDecorator = new TopOrnamentDecorator(myParent, ornament);
+                    break;
+                case "bottom":
+                    newDecorator = new BottomOrnamentDecorator(myParent, ornament);
+                    break;
+                case "left":
+                    newDecorator = new LeftOrnamentDecorator(myParent, ornament);
+                    break;
+                case "right":
+                    newDecorator = new RightOrnamentDecorator(myParent, ornament);
+                    break;
+                default:
+                    break;
+            }
+            assert newDecorator != null;
+            Command c = new AddOrnamentCommand(newDecorator,model,myParent);
+            ornamentCommands.add(c);
+            myParent = newDecorator;
+            stringArrayList.remove(lastArray);
+        }
+
+        return ornamentCommands;
     }
 
-     */
 }
+
+
+

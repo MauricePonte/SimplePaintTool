@@ -13,6 +13,7 @@ public class Shape extends DrawingObject {
     private Color color = Color.BLACK;
 
     private boolean selected;
+
     private com.simplePaintTool.strategy.drawStrategy drawStrategy;
     private Group parent;
 
@@ -34,7 +35,6 @@ public class Shape extends DrawingObject {
     public void draw(Graphics graphics){
         graphics.setColor(this.color);
         drawStrategy.draw(graphics,this);
-        graphics.drawString("wat",super.getX(),super.getY());
     }
 
     @Override
@@ -52,16 +52,6 @@ public class Shape extends DrawingObject {
     public com.simplePaintTool.strategy.drawStrategy getDrawStrategy(){
         return drawStrategy;
     }
-
-    public boolean getSelected(){
-        return selected;
-    }
-
-    public boolean containsClick(int xCoordinate, int yCoordinate){
-
-        return true;
-    };
-
 
     public Color getColor() {
         return this.color;
@@ -106,7 +96,6 @@ public class Shape extends DrawingObject {
     public void accept(ObjectVisitor visitor) throws IOException {
         visitor.visit(this);
     }
-
 
     @Override
     public DrawingObject getShape() {
