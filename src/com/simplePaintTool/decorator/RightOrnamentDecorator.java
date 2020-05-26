@@ -1,22 +1,14 @@
 package com.simplePaintTool.decorator;
 
-import com.simplePaintTool.DrawingObjectVisitor.ObjectVisitor;
 import com.simplePaintTool.shapes.DrawingObject;
-import com.simplePaintTool.shapes.Group;
 import com.simplePaintTool.shapes.Ornament;
-import com.simplePaintTool.shapes.Shape;
 
-import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
-import java.util.List;
 
 public class RightOrnamentDecorator extends ShapeDecorator{
-    private Ornament toBeAdded;
 
     public RightOrnamentDecorator(DrawingObject shape, Ornament ornament){
         super(shape,ornament);
-        toBeAdded = ornament;
     }
 
     @Override
@@ -24,7 +16,6 @@ public class RightOrnamentDecorator extends ShapeDecorator{
         shape.draw(graphics);
         addOrnament(graphics);
     }
-
 
     @Override
     public int getX(){
@@ -47,10 +38,9 @@ public class RightOrnamentDecorator extends ShapeDecorator{
         int x = shape.getX() + shape.getWidth() + 2;
         int y = shape.getY() + (shape.getHeight() /2);
 
-        toBeAdded.setX(x);
-        toBeAdded.setY(y);
-        //shape.setOrnament(ornament);
-        toBeAdded.draw(graphics);
+        ornamentToAdd.setX(x);
+        ornamentToAdd.setY(y);
+        ornamentToAdd.draw(graphics);
     }
 
 

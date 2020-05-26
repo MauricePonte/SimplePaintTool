@@ -1,7 +1,5 @@
 package com.simplePaintTool.mvc;
 
-import com.simplePaintTool.DrawingObjectVisitor.ObjectVisitor;
-import com.simplePaintTool.DrawingObjectVisitor.SaveObjectVisitor;
 import com.simplePaintTool.mvc.PaintingFrame;
 import com.simplePaintTool.commands.*;
 import com.simplePaintTool.decorator.*;
@@ -20,26 +18,21 @@ import java.awt.*;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Stack;
-import java.util.List;
 
 public class PaintController {
-    private PropertyChangeSupport propertyChangeSupport;
-    private PaintModel model;
-    private PaintingFrame frame;
+    private final PropertyChangeSupport propertyChangeSupport;
+    private final PaintModel model;
+    private final PaintingFrame frame;
 
     private DrawingObject selectedObject;
 
-    private int groupCount;
+    final drawStrategy rectangleStrat;
+    final drawStrategy ellipseStrat;
 
-    drawStrategy rectangleStrat;
-    drawStrategy ellipseStrat;
-
-    private Stack<Command> commands;
-    private Stack<Command> undoCommands;
+    private final Stack<Command> commands;
+    private final Stack<Command> undoCommands;
 
     public PaintController(PaintModel model, PaintingFrame frame) {
         this.model = model;
@@ -52,7 +45,6 @@ public class PaintController {
 
         commands = new Stack<>();
         undoCommands = new Stack<>();
-        groupCount = 0;
         this.setList(model.getList());
     }
 
@@ -68,9 +60,12 @@ public class PaintController {
 
     public void undoCommand() throws IOException {
         // Haal de eerste command op de stack op en unexecute deze
-        commands.peek().unexecute();
-        // Haal deze van de commandStack af, en zet deze op de undoCommandsStack
-        undoCommands.push(commands.pop());
+        if(!commands.isEmpty()){
+            commands.peek().unexecute();
+            // Haal deze van de commandStack af, en zet deze op de undoCommandsStack
+            undoCommands.push(commands.pop());
+        }
+
         // Fire property change via observer pattern
         // De command stack is nu leeg dus moet deze button niet gebruikbaar meer zijn
         if(commands.isEmpty()){
@@ -95,7 +90,7 @@ public class PaintController {
             propertyChangeSupport.firePropertyChange("redoBtn off",true,false );
         }
         if(!commands.isEmpty()){
-            propertyChangeSupport.firePropertyChange("redoBtn off",true,false );
+            propertyChangeSupport.firePropertyChange("undoBtn on",false,true );
         }
         // Repaint de shapes
         this.setList(model.getList());
@@ -137,9 +132,6 @@ public class PaintController {
         }
     }
 
-
-
-    // TODO here is my shit code
     public void btnAddOrnamentClicked() throws IOException {
         if(selectedObject.getPrimaryObject()) {
             OrnamentOptionsPanel ornamentOptionsPanel = new OrnamentOptionsPanel();
@@ -182,12 +174,12 @@ public class PaintController {
     public void loadSaveFile() throws IOException {
         this.model.clearCanvas();
         LoadFile loadfile = new LoadFile("TestFile",this.model,this.rectangleStrat,this.ellipseStrat);
-        //Stack<Command> loadedCommands = loadfile.load();
         Stack<Command> loadedCommands = loadfile.initialGroup();
         while(loadedCommands.size() > 0){
             executeCommand(loadedCommands.firstElement());
             loadedCommands.remove(loadedCommands.firstElement());
         }
+        commands.remove(commands.firstElement());
         System.out.println("The file has been loaded");
     }
 

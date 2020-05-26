@@ -6,7 +6,7 @@ import java.awt.*;
 
 public class EllipseStrategy implements drawStrategy {
     // Instance of singleton pattern
-    private static drawStrategy instance = new EllipseStrategy();
+    private static final drawStrategy instance = new EllipseStrategy();
     // Method to get instance (Singleton pattern)
     public static drawStrategy getInstance() {
         return instance;

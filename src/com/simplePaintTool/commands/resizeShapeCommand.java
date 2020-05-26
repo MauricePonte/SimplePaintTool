@@ -1,19 +1,17 @@
 package com.simplePaintTool.commands;
 
-import com.simplePaintTool.DrawingObjectVisitor.ObjectVisitor;
-import com.simplePaintTool.DrawingObjectVisitor.ResizeObjectVisitor;
-import com.simplePaintTool.DrawingObjectVisitor.UnResizeObjectVisitor;
+import com.simplePaintTool.drawingObjectVisitor.ObjectVisitor;
+import com.simplePaintTool.drawingObjectVisitor.ResizeObjectVisitor;
+import com.simplePaintTool.drawingObjectVisitor.UnResizeObjectVisitor;
 import com.simplePaintTool.shapes.DrawingObject;
-import com.simplePaintTool.shapes.Shape;
 
 import java.awt.*;
 import java.io.IOException;
-import java.util.List;
 
 public class resizeShapeCommand implements Command{
-    private DrawingObject shape;
-    private ObjectVisitor doVisitor;
-    private ObjectVisitor undoVisitor;
+    private final DrawingObject shape;
+    private final ObjectVisitor doVisitor;
+    private final ObjectVisitor undoVisitor;
 
     public resizeShapeCommand(Point[] points, DrawingObject object){
         this.shape = object;

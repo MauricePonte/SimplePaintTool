@@ -1,12 +1,11 @@
 package com.simplePaintTool.commands;
 
 import com.simplePaintTool.mvc.PaintModel;
-import com.simplePaintTool.shapes.DrawingObject;
 import com.simplePaintTool.shapes.Group;
 
 public class AddGroupCommand implements Command{
-    private Group group;
-    private PaintModel model;
+    private final Group group;
+    private final PaintModel model;
 
     public AddGroupCommand(Group group,PaintModel model){
         this.model = model;
@@ -16,12 +15,12 @@ public class AddGroupCommand implements Command{
 
     @Override
     public void execute() {
-        this.model.addShape2(this.group,this.group.getParent());
+        this.model.addShape(this.group,this.group.getParent());
     }
 
     @Override
     public void unexecute() {
-        this.model.removeShape2(this.group,this.group.getParent());
+        this.model.removeShape(this.group,this.group.getParent());
     }
 
 }

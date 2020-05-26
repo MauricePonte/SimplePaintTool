@@ -1,19 +1,17 @@
 package com.simplePaintTool.commands;
 
-import com.simplePaintTool.DrawingObjectVisitor.MoveObjectVisitor;
-import com.simplePaintTool.DrawingObjectVisitor.ObjectVisitor;
-import com.simplePaintTool.DrawingObjectVisitor.UnMoveObjectVisitor;
+import com.simplePaintTool.drawingObjectVisitor.MoveObjectVisitor;
+import com.simplePaintTool.drawingObjectVisitor.ObjectVisitor;
+import com.simplePaintTool.drawingObjectVisitor.UnMoveObjectVisitor;
 import com.simplePaintTool.shapes.DrawingObject;
-import com.simplePaintTool.shapes.Shape;
 
 import java.awt.*;
 import java.io.IOException;
-import java.util.List;
 
 public class moveShapeCommand implements Command{
-    private DrawingObject shape;
-    private ObjectVisitor doVisitor;
-    private ObjectVisitor undoVisitor;
+    private final DrawingObject shape;
+    private final ObjectVisitor doVisitor;
+    private final ObjectVisitor undoVisitor;
 
     public moveShapeCommand(Point[] points, DrawingObject object){
         this.shape = object;

@@ -1,18 +1,16 @@
-package com.simplePaintTool.DrawingObjectVisitor;
+package com.simplePaintTool.drawingObjectVisitor;
 
 import com.simplePaintTool.decorator.*;
-import com.simplePaintTool.shapes.DrawingObject;
 import com.simplePaintTool.shapes.Group;
-import com.simplePaintTool.shapes.Ornament;
 import com.simplePaintTool.shapes.Shape;
 
 import java.io.*;
 
 public class SaveObjectVisitor implements ObjectVisitor {
     final String lineSep=System.getProperty("line.separator");
-    private BufferedWriter fileWriter;
+    private final BufferedWriter fileWriter;
 
-    public SaveObjectVisitor(BufferedWriter fileWriter) throws FileNotFoundException {
+    public SaveObjectVisitor(BufferedWriter fileWriter) {
         this.fileWriter = fileWriter;
     }
 

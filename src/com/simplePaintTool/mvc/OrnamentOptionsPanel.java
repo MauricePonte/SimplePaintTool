@@ -7,22 +7,12 @@ import java.awt.event.*;
 
 public class OrnamentOptionsPanel extends JDialog {
 
-    private final JPanel mainPanel;
-    private JTextField txt_ornamentText;
-    private JComboBox cmb_ornamentPos;
-    private String[] options = {"top","bottom","left","right"};
-
-    private JLabel lbl_ornamentText;
-    private JLabel lblYcoordinate;
+    private final JTextField txt_ornamentText;
+    private final JComboBox cmb_ornamentPos;
 
     private String ornamentText;
     private String ornamentPos;
-
-
-
     private boolean confirmed;
-
-
 
     public OrnamentOptionsPanel() {
         setModal(true);
@@ -31,7 +21,7 @@ public class OrnamentOptionsPanel extends JDialog {
         setBounds(100, 100, 440, 320);
         setLocationRelativeTo(null);
         getContentPane().setLayout(new BorderLayout());
-        mainPanel = new JPanel();
+        JPanel mainPanel = new JPanel();
         mainPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         getContentPane().add(mainPanel, BorderLayout.CENTER);
         GridBagLayout gbl_mainPanel = new GridBagLayout();
@@ -42,7 +32,7 @@ public class OrnamentOptionsPanel extends JDialog {
 
         mainPanel.setLayout(gbl_mainPanel);
         {
-            lbl_ornamentText = new JLabel("Enter text");
+            JLabel lbl_ornamentText = new JLabel("Enter text");
             GridBagConstraints gbc_lblOrnamentText= new GridBagConstraints();
             gbc_lblOrnamentText.insets = new Insets(0, 0, 5, 5);
             gbc_lblOrnamentText.gridx = 2;
@@ -61,6 +51,7 @@ public class OrnamentOptionsPanel extends JDialog {
             mainPanel.add(txt_ornamentText, gbc_txtXcoordinate);
             txt_ornamentText.setColumns(10);
         }
+        JLabel lblYcoordinate;
         {
             lblYcoordinate = new JLabel("Select position relative to selected shape");
             GridBagConstraints gbc_lblYcoordinate = new GridBagConstraints();
@@ -70,7 +61,8 @@ public class OrnamentOptionsPanel extends JDialog {
             mainPanel.add(lblYcoordinate, gbc_lblYcoordinate);
         }
         {
-            cmb_ornamentPos = new JComboBox(options);
+            String[] options = {"top", "bottom", "left", "right"};
+            cmb_ornamentPos = new JComboBox<>(options);
             lblYcoordinate.setLabelFor(cmb_ornamentPos);
             GridBagConstraints gbc_txtYcoordinate = new GridBagConstraints();
             gbc_txtYcoordinate.insets = new Insets(0, 0, 5, 5);
@@ -89,23 +81,21 @@ public class OrnamentOptionsPanel extends JDialog {
                 JButton btnConfirm = new JButton("Confirm");
                 btnConfirm.setBackground(Color.GREEN);
                 btnConfirm.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                btnConfirm.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent click) {
-                        if (txt_ornamentText.getText().isEmpty()) JOptionPane.showMessageDialog(getParent(), "Er moet tekst ingevuld worden!", "Error", JOptionPane.ERROR_MESSAGE);
-                        else {
-                            try {
-                                ornamentText = txt_ornamentText.getText();
-                                ornamentPos = cmb_ornamentPos.getSelectedItem().toString();
+                btnConfirm.addActionListener(click -> {
+                    if (txt_ornamentText.getText().isEmpty()) JOptionPane.showMessageDialog(getParent(), "Er moet tekst ingevuld worden!", "Error", JOptionPane.ERROR_MESSAGE);
+                    else {
+                        try {
+                            ornamentText = txt_ornamentText.getText();
+                            ornamentPos = cmb_ornamentPos.getSelectedItem().toString();
 
-                                if(ornamentText.length() <= 0 ) JOptionPane.showMessageDialog(getParent(), "Er moet tekst ingevuld worden!", "Error", JOptionPane.ERROR_MESSAGE);
-                                else {
-                                    confirmed = true;
-                                    setVisible(false);
-                                    dispose();
-                                }
-                            } catch (NumberFormatException exception) {
-                                JOptionPane.showMessageDialog(getParent(),"Er moet tekst ingevuld worden!", "Error", JOptionPane.ERROR_MESSAGE);
+                            if(ornamentText.length() <= 0 ) JOptionPane.showMessageDialog(getParent(), "Er moet tekst ingevuld worden!", "Error", JOptionPane.ERROR_MESSAGE);
+                            else {
+                                confirmed = true;
+                                setVisible(false);
+                                dispose();
                             }
+                        } catch (NumberFormatException exception) {
+                            JOptionPane.showMessageDialog(getParent(),"Er moet tekst ingevuld worden!", "Error", JOptionPane.ERROR_MESSAGE);
                         }
                     }
                 });

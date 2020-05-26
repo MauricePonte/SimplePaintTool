@@ -2,12 +2,11 @@ package com.simplePaintTool.commands;
 
 import com.simplePaintTool.mvc.PaintModel;
 import com.simplePaintTool.shapes.DrawingObject;
-import com.simplePaintTool.shapes.Group;
 
 public class AddOrnamentCommand  implements Command {
-        private DrawingObject ornament;
-        private PaintModel model;
-        private DrawingObject original;
+        private final DrawingObject ornament;
+        private final PaintModel model;
+        private final DrawingObject original;
 
         //ook wel switch shape command, vervangt een shape voor een shapedecorator.
         public AddOrnamentCommand(DrawingObject ornament, PaintModel model,DrawingObject original) {

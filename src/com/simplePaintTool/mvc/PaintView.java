@@ -1,11 +1,7 @@
 package com.simplePaintTool.mvc;
 
-import com.simplePaintTool.shapes.DrawingObject;
-import com.simplePaintTool.shapes.Shape;
-
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 
 public class PaintView extends JPanel {
     private PaintModel model;

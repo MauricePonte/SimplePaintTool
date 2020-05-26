@@ -1,13 +1,12 @@
 package com.simplePaintTool.strategy;
 
-import com.simplePaintTool.shapes.DrawingObject;
 import com.simplePaintTool.shapes.Shape;
 
 import java.awt.*;
 
 public class RectangleStrategy implements drawStrategy {
     // Instance of singleton pattern
-    private static drawStrategy instance = new RectangleStrategy();
+    private static final drawStrategy instance = new RectangleStrategy();
     // Method to get instance (Singleton pattern)
     public static drawStrategy getInstance() {
         return instance;

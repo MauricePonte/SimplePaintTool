@@ -19,14 +19,13 @@ import java.util.Stack;
 import java.util.List;
 
 public class LoadFile {
-    private String fileName;
-    private PaintModel model;
-    drawStrategy rectangleStrat;
-    drawStrategy ellipseStrat;
-    private Stack<Command> loadCommands;
-    private DrawingObject newParent;
+    private final String fileName;
+    private final PaintModel model;
+    final drawStrategy rectangleStrat;
+    final drawStrategy ellipseStrat;
+    private final Stack<Command> loadCommands;
 
-    public LoadFile(String fileName,PaintModel model,drawStrategy rect,drawStrategy ellips) throws FileNotFoundException {
+    public LoadFile(String fileName,PaintModel model,drawStrategy rect,drawStrategy ellips) {
         this.fileName = fileName + ".txt";
         this.model = model;
         this.rectangleStrat = rect;
@@ -34,16 +33,7 @@ public class LoadFile {
         this.loadCommands = new Stack<>();
     }
 
-    public Stack<Command> load() throws IOException {
-        Group firstGroup = new Group(0,null);
-        Command firstGroupCommand = new AddGroupCommand(firstGroup,model);
-        loadCommands.add(firstGroupCommand);
-        addGroup2(0,firstGroup,0);
-
-        return loadCommands;
-    }
-
-    private void addShape2(String[] readerLine,int indentation,Group parent,List<String[]> stringArrays){
+    private void addShape(String[] readerLine, int indentation, Group parent, List<String[]> stringArrays){
 
         String soortShape = readerLine[indentation];
         int x = Integer.parseInt(readerLine[indentation+1]);
@@ -60,27 +50,26 @@ public class LoadFile {
         if(stringArrays.size() >0 ) loadCommands.addAll(addOrnaments(stringArrays,s));
     }
 
-    private void addGroup2(int indentation,Group parent,int lineCount) throws IOException {
+    private void addGroup(int indentation, Group parent, int lineCount) throws IOException {
         BufferedReader fileReader = new BufferedReader(new FileReader(fileName));
 
-        String readerLine = null;
+        String readerLine;
         String[] readerTokens;
         int counter = 0;
-        int start = lineCount;
         int groupID = (indentation+2) / 2;
         boolean keepReading = true;
         List<String[]> stringArrays = new ArrayList<>();
 
         while((readerLine = fileReader.readLine()) != null && keepReading){
             readerTokens = readerLine.split(" ");
-            if(counter > start) {
+            if(counter > lineCount) {
                 if (readerTokens.length > indentation) {
                     if (readerTokens[indentation].equals("group")) {
                         keepReading = false;
                     } else {
                         int indentationcount = 0;
-                        for (int i = 0; i < readerTokens.length; i++) {
-                            if (readerTokens[i].isBlank()) {
+                        for (String readerToken : readerTokens) {
+                            if (readerToken.isBlank()) {
                                 indentationcount++;
                             }
                         }
@@ -98,11 +87,11 @@ public class LoadFile {
                                 loadCommands.add(c);
                                 if(stringArrays.size() >0 ) loadCommands.addAll(addOrnaments(stringArrays,newGroup));
                                 stringArrays.clear();
-                                addGroup2(indentationcount, newGroup, counter);
+                                addGroup(indentationcount, newGroup, counter);
                             }
                             if (readerTokens[indentationcount].equals("ellipse") ||
                                     readerTokens[indentationcount].equals("rectangle")) {
-                                addShape2(readerTokens, indentationcount, parent,stringArrays);
+                                addShape(readerTokens, indentationcount, parent,stringArrays);
                                 stringArrays.clear();
                             }
                         }
@@ -113,7 +102,6 @@ public class LoadFile {
         }
         fileReader.close();
     }
-    // TODO wtf is going on ova here
 
     public Stack<Command> initialGroup() throws IOException {
         BufferedReader fileReader = new BufferedReader(new FileReader(fileName));
@@ -137,7 +125,7 @@ public class LoadFile {
                 keepReading = false;
                 if(stringArrays.size() >0 ) loadCommands.addAll(addOrnaments(stringArrays,firstGroup));
                 stringArrays.clear();
-                addGroup2(0,firstGroup,loadCommands.size()-1);
+                addGroup(0,firstGroup,loadCommands.size()-1);
             }
 
         }

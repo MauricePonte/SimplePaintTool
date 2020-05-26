@@ -1,6 +1,6 @@
 package com.simplePaintTool.shapes;
 
-import com.simplePaintTool.DrawingObjectVisitor.ObjectVisitor;
+import com.simplePaintTool.drawingObjectVisitor.ObjectVisitor;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,7 +11,7 @@ public abstract class DrawingObject {
     private int x,y,width,height;
     private boolean primaryObject;
 
-    public void draw(Graphics graphics){};
+    public void draw(Graphics graphics){}
     public abstract void select();
     public abstract void deselect();
     public abstract String toString();
@@ -46,5 +46,5 @@ public abstract class DrawingObject {
     public void setHeight(int height) {
         this.height = height;
     }
-    public void setPrimaryObject(boolean Primary){this.primaryObject = Primary;};
+    public void setPrimaryObject(boolean Primary){this.primaryObject = Primary;}
 }

@@ -1,13 +1,1 @@
-ornament left "MEER"
-ornament top "asd"
-group 3 0
-  ornament bottom "asdasasd"
-  ornament top "asd"
-  ellipse 497 131 356 296
-  ornament top "asd"
-  ellipse 287 256 331 376
-  group 2 1
-    ornament bottom "okiedokie"
-    ornament top "okey"
-    rectangle 944 117 202 190
-    ellipse 951 413 342 216
+group 0

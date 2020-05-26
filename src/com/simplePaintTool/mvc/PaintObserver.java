@@ -6,7 +6,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 public class PaintObserver implements PropertyChangeListener {
-    PaintingFrame frame;
+    final PaintingFrame frame;
 
     public PaintObserver(PaintingFrame frame){
         this.frame = frame;

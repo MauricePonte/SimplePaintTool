@@ -1,6 +1,6 @@
 package com.simplePaintTool.shapes;
 
-import com.simplePaintTool.DrawingObjectVisitor.ObjectVisitor;
+import com.simplePaintTool.drawingObjectVisitor.ObjectVisitor;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,12 +10,10 @@ import java.util.List;
 
 public class Group extends DrawingObject {
 
-    List<DrawingObject> ChildrenObjects;
+    final List<DrawingObject> ChildrenObjects;
 
-    int groupID;
-    boolean selected;
-    private Group parent;
-    private boolean primaryObject;
+    final int groupID;
+    private final Group parent;
 
     public Group(int id,Group parent){
         this.groupID = id;
@@ -32,7 +30,6 @@ public class Group extends DrawingObject {
 
     @Override
     public void select() {
-        this.selected = true;
         for(DrawingObject d:ChildrenObjects){
             d.select();
         }
@@ -40,12 +37,10 @@ public class Group extends DrawingObject {
 
     @Override
     public void deselect() {
-        this.selected = false;
         for(DrawingObject d:ChildrenObjects){
             d.deselect();
         }
     }
-
 
     public void addChild(DrawingObject d){
         this.ChildrenObjects.add(d);
@@ -69,14 +64,12 @@ public class Group extends DrawingObject {
 
     @Override
     public String toString(){
-        String returnString = "";
+        StringBuilder returnString = new StringBuilder();
         if(this.parent != null){
-            for(int i = 0; i <= this.parent.groupID;i++){
-                returnString += "  ";
-            }
+            returnString.append("  ".repeat(Math.max(0, this.parent.groupID + 1)));
         }
-        returnString += "group " + ChildrenObjects.size();
-        return returnString;
+        returnString.append("group ").append(ChildrenObjects.size());
+        return returnString.toString();
     }
 
     @Override
@@ -125,22 +118,30 @@ public class Group extends DrawingObject {
 
     @Override
     public int getX(){
-        int smallX = 3000;
-        if(ChildrenObjects.size() == 0 ) smallX = 500;
-        for(DrawingObject d:ChildrenObjects){
-            if(d.getX() < smallX) smallX = d.getX();
+        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        int width = gd.getDisplayMode().getWidth();
+        int result = width / 2;
+
+        if(!ChildrenObjects.isEmpty()){
+            for(DrawingObject d:ChildrenObjects){
+                if(d.getX() < result)result = d.getX();
+            }
         }
-        return smallX - 10;
+        return result - 10;
     }
 
     @Override
     public int getY(){
-        int smallY = 3000;
-        if(ChildrenObjects.size() == 0 ) smallY = 500;
-        for(DrawingObject d:ChildrenObjects){
-            if(d.getY() < smallY)smallY = d.getY();
+        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        int height = gd.getDisplayMode().getHeight();
+        int result = height / 2;
+
+        if(!ChildrenObjects.isEmpty()){
+            for(DrawingObject d:ChildrenObjects){
+                if(d.getY() < result)result = d.getY();
+            }
         }
-        return smallY - 10;
+        return result - 10;
     }
 
     @Override

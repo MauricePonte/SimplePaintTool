@@ -1,17 +1,14 @@
 package com.simplePaintTool.shapes;
 
-import com.simplePaintTool.DrawingObjectVisitor.ObjectVisitor;
-import com.simplePaintTool.shapes.DrawingObject;
-import com.simplePaintTool.shapes.Group;
+import com.simplePaintTool.drawingObjectVisitor.ObjectVisitor;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
 import java.util.List;
 
 public class Ornament extends DrawingObject {
-    String text;
-    String pos;
+    final String text;
+    final String pos;
     int x,y;
 
     public Ornament(String text,String pos) {
@@ -76,7 +73,7 @@ public class Ornament extends DrawingObject {
     }
 
     @Override
-    public void accept(ObjectVisitor visitor) throws IOException {
+    public void accept(ObjectVisitor visitor) {
 
     }
 }

@@ -7,45 +7,34 @@ import com.simplePaintTool.shapes.DrawingObject;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class PaintingFrame extends JFrame {
-    private JPanel mainPanel;
-    private PaintView view;
+    private final PaintView view;
     private PaintController controller;
 
-    private final ButtonGroup buttonsGroup;
-    private JToggleButton tglBtnResize;
-    private JToggleButton tglBtnMove;
-    private JToggleButton tglBtnDrawRectangle;
-    private JToggleButton tglBtnDrawElipse;
+    private final JToggleButton tglBtnResize;
+    private final JToggleButton tglBtnMove;
+    private final JToggleButton tglBtnDrawRectangle;
+    private final JToggleButton tglBtnDrawElipse;
 
-    private JButton btnGroup;
-    private JButton btnUndo;
-    private JButton btnRedo;
-    private JButton btnSave;
-    private JButton btnLoad;
+    private final JButton btnUndo;
+    private final JButton btnRedo;
 
-    private JButton btnAddOrnament;
-
-    private JLabel label = new JLabel("Selecteer een object");
-    private DefaultListModel<DrawingObject> dataModel = new DefaultListModel();
-    private JList<DrawingObject> drawingObjectJList = new JList<>(dataModel);
+    private final DefaultListModel<DrawingObject> dataModel = new DefaultListModel<>();
+    private final JList<DrawingObject> drawingObjectJList = new JList<>(dataModel);
     // Mouse adapters voor buttons
-    private MouseAdapter mouseAdapterUndo;
-    private MouseAdapter mouseAdapterRedo;
+    private final MouseAdapter mouseAdapterUndo;
+    private final MouseAdapter mouseAdapterRedo;
 
     public PaintingFrame(){
         // Comment here
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
 
-        mainPanel = new JPanel();
+        JPanel mainPanel = new JPanel();
         mainPanel.setBackground(Color.GRAY);
         mainPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         mainPanel.setLayout(new BorderLayout(0, 0));
@@ -64,7 +53,7 @@ public class PaintingFrame extends JFrame {
         view.setBackground(Color.WHITE);
         mainPanel.add(view, BorderLayout.CENTER);
         mainPanel.add(buttonsPanel, BorderLayout.NORTH);
-        buttonsGroup = new ButtonGroup();
+        ButtonGroup buttonsGroup = new ButtonGroup();
 
         // Hier instancieren we Toggle buttons
         // Rectanlge button
@@ -88,7 +77,7 @@ public class PaintingFrame extends JFrame {
 
         // Hier instancieren we overige buttons
         //addGroup button
-        btnGroup = new JButton("Add Group");
+        JButton btnGroup = new JButton("Add Group");
         btnGroup.setEnabled(true);
         buttonsPanel.add(btnGroup);
         // Undo button
@@ -100,15 +89,15 @@ public class PaintingFrame extends JFrame {
         btnRedo.setEnabled(false);
         buttonsPanel.add(btnRedo);
         //save button
-        btnSave = new JButton("Save");
+        JButton btnSave = new JButton("Save");
         btnSave.setEnabled(true);
         buttonsPanel.add(btnSave);
         //load button
-        btnLoad = new JButton("Load");
+        JButton btnLoad = new JButton("Load");
         btnLoad.setEnabled(true);
         buttonsPanel.add(btnLoad);
         // Add ornament
-        btnAddOrnament = new JButton("Add ornament");
+        JButton btnAddOrnament = new JButton("Add ornament");
         btnAddOrnament.setEnabled(true);
         buttonsPanel.add(btnAddOrnament);
 
@@ -116,68 +105,54 @@ public class PaintingFrame extends JFrame {
         //ListListener called select op het geselecteerde element
         drawingObjectJList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         listPanel.add(drawingObjectJList);
-        drawingObjectJList.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                if(e.getValueIsAdjusting()){
-                    controller.deselectAll();
-                    DrawingObject d = dataModel.get(drawingObjectJList.getSelectedIndex());
-                    d.select();
-                    controller.setSelectedObject(d);
-                    view.repaint();
-                }
+        drawingObjectJList.addListSelectionListener(e -> {
+            if(e.getValueIsAdjusting()){
+                controller.deselectAll();
+                DrawingObject d = dataModel.get(drawingObjectJList.getSelectedIndex());
+                d.select();
+                controller.setSelectedObject(d);
+                view.repaint();
             }
         });
 
         mainPanel.add(listPanel,BorderLayout.WEST);
 
         //Action listener van de load button
-        btnLoad.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    controller.loadSaveFile();
-                } catch (IOException ioException) {
-                    ioException.printStackTrace();
-                }
+        btnLoad.addActionListener(e -> {
+            try {
+                controller.loadSaveFile();
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
             }
         });
-        btnSave.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    controller.SaveFileClicked();
-                } catch (IOException ex) {
-                }
+        btnSave.addActionListener(e -> {
+            try {
+                controller.SaveFileClicked();
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
         });
-        btnGroup.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    controller.btnAddGroupClicked();
-                } catch (IOException ioException) {
-                    ioException.printStackTrace();
-                }
+        btnGroup.addActionListener(e -> {
+            try {
+                controller.btnAddGroupClicked();
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
         });
-        btnAddOrnament.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {controller.btnAddOrnamentClicked();} catch (IOException ioException) {}
-            }
+        btnAddOrnament.addActionListener(e -> {
+            try {controller.btnAddOrnamentClicked();} catch (IOException ex) {ex.printStackTrace();}
         });
 
         mouseAdapterRedo = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                try {controller.redoCommand();} catch (IOException ioException) {ioException.printStackTrace();}
+                try {controller.redoCommand();} catch (IOException ex) {ex.printStackTrace();}
             }
         };
         mouseAdapterUndo = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                try {controller.undoCommand();} catch (IOException ioException) {}
+                try {controller.undoCommand();} catch (IOException ex) {ex.printStackTrace();}
             }
         };
 
@@ -194,16 +169,16 @@ public class PaintingFrame extends JFrame {
                 pointers[1] = new Point(e.getX(), e.getY());
                 if(validateDrawing(pointers)){
                     if (tglBtnDrawRectangle.isSelected()) {
-                        try {controller.btnAddRectangleClicked(pointers);} catch (IOException ioException) {}
+                        try {controller.btnAddRectangleClicked(pointers);} catch (IOException ex) {ex.printStackTrace();}
                     }
                     if (tglBtnDrawElipse.isSelected()) {
-                        try {controller.btnAddEllipseClicked(pointers);} catch (IOException ioException) {}
+                        try {controller.btnAddEllipseClicked(pointers);} catch (IOException ex) {ex.printStackTrace();}
                     }
                     if (tglBtnResize.isSelected()) {
-                        try {controller.btnResizeClicked(pointers);} catch (IOException ioException) {}
+                        try {controller.btnResizeClicked(pointers);} catch (IOException ex) {ex.printStackTrace();}
                     }
                     if (tglBtnMove.isSelected()) {
-                        try {controller.btnMoveClicked(pointers);} catch (IOException ioException) {}
+                        try {controller.btnMoveClicked(pointers);} catch (IOException ex) {ex.printStackTrace();}
                     }
                 }
             }
@@ -248,8 +223,7 @@ public class PaintingFrame extends JFrame {
         int y1 = points[0].y;
         int y2 = points[1].y;
 
-        if(Math.abs(x1-x2) > 10 && Math.abs(y1-y2) > 10) return true; else return false;
-
+        return Math.abs(x1 - x2) > 10 && Math.abs(y1 - y2) > 10;
     }
 
 }
